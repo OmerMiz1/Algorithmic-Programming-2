@@ -3,4 +3,4 @@ project(AlgorithmicProgrammingProject)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(AlgorithmicProgrammingProject main.cpp Lexer.cpp Lexer.h Parser.cpp Parser.h Command.h ConditionParser.cpp ConditionParser.h IfCommand.cpp IfCommand.h LoopCommand.cpp LoopCommand.h OpenServerCommand.cpp OpenServerCommand.h ConnectComand.cpp ConnectComand.h DefineVarCommand.cpp DefineVarCommand.h FuncCommand.cpp FuncCommand.h)
+add_executable(AlgorithmicProgrammingProject main.cpp Lexer.cpp Lexer.h Parser.cpp Parser.h Command.h ConditionParser.cpp ConditionParser.h IfCommand.cpp IfCommand.h LoopCommand.cpp LoopCommand.h OpenServerCommand.cpp OpenServerCommand.h ConnectCommand.cpp ConnectCommand.h DefineVarCommand.cpp DefineVarCommand.h FuncCommand.cpp FuncCommand.h)

@@ -11,6 +11,7 @@ class OpenServerCommand : public Command {
   int port;
  public:
   OpenServerCommand(int port);
+  virtual int execute();
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__OPENSERVERCOMMAND_H_

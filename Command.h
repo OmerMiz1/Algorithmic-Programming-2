@@ -7,7 +7,7 @@
 
 class Command {
  public:
-  int execute();
+  virtual int execute() = 0;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__COMMAND_H_
