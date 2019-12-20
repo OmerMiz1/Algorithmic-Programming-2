@@ -7,17 +7,18 @@
 
 #include "Command.h"
 #include <thread>
+#include <netinet/in.h>
 
 using namespace std;
 class OpenServerCommand : public Command {
  private:
   int port;
-  thread t;
+  bool listening;
+  thread myThread;
 
  public:
-  OpenServerCommand(int port);
+  OpenServerCommand(int port) : port(port), listening(true) {};
   virtual int execute();
-  int openServer();
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__OPENSERVERCOMMAND_H_

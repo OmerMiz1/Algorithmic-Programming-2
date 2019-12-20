@@ -12,14 +12,6 @@ DefineVarCommand::DefineVarCommand(string name, string direction, string sim)
  * 2. Update data received  about var from the simulator.
  */
 int DefineVarCommand::execute() {
-  if(direction.compare("->") != 0 && direction.compare("<-") != 0) {
-    throw "Error in : DefineVarCommand:execute(). Var has no direction.";
-  }
-
-  if (direction.compare("->") == 0) {
-
-  } else {
-
-  }
+  //TODO each arrow direction should be a Command !
   return 4;
 }

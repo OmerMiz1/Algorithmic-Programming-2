@@ -13,9 +13,10 @@ using namespace std;
 
 class Parser {
  private:
-
+  list<string> varList;
  public:
-   void genMap(list<string> input);
+  void genMap(list<string> inputFromLexer);
+  void initVarList();
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__PARSER_H_
