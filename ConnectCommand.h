@@ -1,5 +1,5 @@
 //
-// Created by omer on 19/12/2019.
+// Created by Dor on 19/12/2019.
 //
 
 #ifndef ALGORITHMICPROGRAMMINGPROJECT__CONNECTCOMMAND_H_
@@ -13,17 +13,18 @@ using namespace std;
 class ConnectCommand : public Command {
  private:
   int port;
-  string ip;
+  const char *ip;
+  int clientSocket;
 
  public:
-  ConnectCommand(string port,string ip);
+  ConnectCommand(const char *port, const char *ip);
+  void sendToHost(const char *str);
   //TODO ~ConnectCommand if handles threads - remember to update D'tor.
-  ~ConnectCommand() = default;
-  /*The reason its virtual - Eli said in one of
-   the videos its good practice to do so, this way you can remember it was
-   inherited or someting like that.. delete this after you read it :)*/
+  ~ConnectCommand();
   virtual int execute() override;
-
+  int skip() {
+      return 3;
+  }
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__CONNECTCOMMAND_H_
