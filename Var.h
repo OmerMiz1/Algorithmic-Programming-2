@@ -6,6 +6,7 @@
 #define ALGORITHMICPROGRAMMINGPROJECT__VAR_H_
 
 #include <string>
+#include <utility>
 using namespace std;
 
 class Var {
@@ -14,6 +15,7 @@ class Var {
   float value;
 
  public:
+  Var(string varName, float varValue) : name(move(varName)), value(varValue) {}
   string getName() {return this->name;}
   float getValue() {return this->value;}
   void setValue(float newValue) {this->value = newValue;}

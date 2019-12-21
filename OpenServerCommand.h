@@ -8,16 +8,16 @@
 #include "Command.h"
 #include <thread>
 #include <netinet/in.h>
+#include <iostream>
 
 using namespace std;
 class OpenServerCommand : public Command {
  private:
   int port;
-  bool listening;
-  thread myThread;
+  bool listening = true;
 
  public:
-  OpenServerCommand(int port) : port(port), listening(true) {};
+  OpenServerCommand(string port);
   virtual int execute();
 };
 

@@ -8,15 +8,23 @@
 #include <string>
 #include <list>
 #include <unordered_map>
+#include "Command.h"
+#include "Var.h"
 
 using namespace std;
 
 class Parser {
  private:
-  list<string> varList;
+  unordered_map<string, Var*> varMap;
+  unordered_map<string, list<pair<string,Command*>>::iterator> localVarMap;
+  unordered_map<string, list<pair<string,Command*>>::iterator> cmdMap;
+
  public:
-  void genMap(list<string> inputFromLexer);
-  void initVarList();
+  Parser();
+  ~Parser() = default;
+  void updateMap(list<string> inputFromLexer);
+
+  /*void initVarMap();*/
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__PARSER_H_

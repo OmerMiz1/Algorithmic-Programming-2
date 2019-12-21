@@ -16,7 +16,7 @@ class ConnectCommand : public Command {
   string ip;
 
  public:
-  ConnectCommand(int port,string ip);
+  ConnectCommand(string port,string ip);
   //TODO ~ConnectCommand if handles threads - remember to update D'tor.
   ~ConnectCommand() = default;
   /*The reason its virtual - Eli said in one of

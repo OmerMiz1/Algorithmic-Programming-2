@@ -13,8 +13,7 @@ using namespace std;
 class Lexer {
 
 public:
-    string* analyzeCode(FILE* file);
-
+  string* analyzeCode(FILE* file);
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__LEXER_H_
