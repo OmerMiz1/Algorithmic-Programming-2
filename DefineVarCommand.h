@@ -14,7 +14,10 @@ class DefineVarCommand : public Command {
  private:
   string name, direction, sim;
  public:
-  DefineVarCommand(string name, string direction, string sim);
+
+  //TODO can have: <- -> and = for assignment
+  DefineVarCommand(string name, string direction, string sim);// with <-\->
+  DefineVarCommand(string name, string value); // assignment (var = new value)
   virtual int execute() override;
 };
 

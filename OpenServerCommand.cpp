@@ -5,16 +5,10 @@
 #define MAX_CHARS 1024
 #define MAX_CLIENTS 1
 
+
 #include "OpenServerCommand.h"
 #include "Lexer.h"
 #include "Parser.h"
-
-#include <string>
-#include <thread>
-#include <sys/socket.h>
-#include <iostream>
-#include <netinet/in.h>
-#include <zconf.h>
 using namespace std;
 
 OpenServerCommand::OpenServerCommand(string port)  {
@@ -32,9 +26,8 @@ int OpenServerCommand::execute() {
 
   Parser* parser = new Parser();
 
+  // OPEN SOCKET
   sockfd = socket(AF_INET,SOCK_STREAM,0);
-
-  // error
   if(sockfd == -1) {
     cerr<<"Could not create a socket."<<endl;
     return -1;
@@ -44,31 +37,40 @@ int OpenServerCommand::execute() {
   address.sin_addr.s_addr = INADDR_ANY; // give me any ip alloc'd for my machine
   address.sin_port = htons(this->port); // more info tirgul 6 page 32
 
-  //error
+  // BIND
   if(bind(sockfd, (struct sockaddr*)&address, sizeof(address)) == -1) {
     cerr<<"Could not bind the socket to an IP"<<endl;
     return -2;
   }
 
-  // listen until a connection is made.
-  while(this->listening) {
+  // loop ends when a connection is made or error was thrown
+  while(true) {
+    // LISTEN
     if(listen(sockfd,MAX_CLIENTS) == -1) {
       sleep(250);
       continue;
     }
+
+    // ACCEPT
     client_sock = accept(sockfd, (struct sockaddr*)&address, (socklen_t*)&address);
     if (client_sock == -1) {
       sleep(250);
       continue;
     }
+
     // connection made, close listening socket.
-    this->listening = false;
     close(sockfd);
+    break;
   }
 
   //TODO how do i keep reading/writing in loop
   valRead = read(client_sock,buffer,MAX_CHARS);
-  parser->updateMap(Lexer.analyzeLine(buffer));
+  string bufferStr(*buffer);
+
+  //TODO implement this part
+  for (string str : Lexer::analyzeLine(bufferStr) {
+    // Take thse instructions and do something about it.
+  }
 
 
   return 0;

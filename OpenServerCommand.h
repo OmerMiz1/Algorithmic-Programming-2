@@ -5,16 +5,18 @@
 #ifndef ALGORITHMICPROGRAMMINGPROJECT__OPENSERVERCOMMAND_H_
 #define ALGORITHMICPROGRAMMINGPROJECT__OPENSERVERCOMMAND_H_
 
-#include "Command.h"
-#include <thread>
-#include <netinet/in.h>
+#include <string>
 #include <iostream>
+#include <thread>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <zconf.h>
+#include "Command.h"
 
 using namespace std;
 class OpenServerCommand : public Command {
  private:
   int port;
-  bool listening = true;
 
  public:
   OpenServerCommand(string port);

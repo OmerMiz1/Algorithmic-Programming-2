@@ -7,8 +7,10 @@
 
 
 #include "Expression.h"
+#include "Command.h"
 
-class Condition {
+class Condition : Command {
+  //TODO should be protected for LoopCommand to reuse
     string left;
     string sign;
     string right;
