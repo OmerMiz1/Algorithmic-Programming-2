@@ -12,6 +12,7 @@ class Var {
  private:
   string name;
   float value;
+  //TODO add string that indicates the var location in sim
 
  public:
   string getName() {return this->name;}
