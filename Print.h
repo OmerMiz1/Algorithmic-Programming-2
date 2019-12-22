@@ -7,15 +7,17 @@
 
 #include <string>
 #include <utility>
+#include <iostream>
 #include "Command.h"
 using namespace std;
 
-class Print : Command {
+class Print : public Command {
  private:
- string msg;
+  string msg;
+
  public:
   Print(string message) : msg(move(message)) {}
-  virtual int execute() override;
+  virtual int execute() override {cout<<msg<<endl; return 2;}
 
 };
 

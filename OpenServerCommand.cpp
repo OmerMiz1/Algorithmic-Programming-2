@@ -2,20 +2,35 @@
 // Created by omer on 19/12/2019.
 //
 
+#define MAX_CHARS 1024
+#define MAX_CLIENTS 1
+
 #include "OpenServerCommand.h"
+#include "Lexer.h"
+#include "Parser.h"
 
 #include <string>
 #include <thread>
 #include <sys/socket.h>
 #include <iostream>
 #include <netinet/in.h>
+#include <zconf.h>
 using namespace std;
 
-void startListening(int, sockaddr_in);
+OpenServerCommand::OpenServerCommand(string port)  {
+  try{
+    this->port = stoi(port);
+  } catch (const char* e) {
+    cout<<e<<endl;
+  }
+};
 
 int OpenServerCommand::execute() {
-  int sockfd, client_sock;
+  int sockfd=0, client_sock=0, valRead=0;
+  char *buffer[MAX_CHARS];
   sockaddr_in address{};
+
+  Parser* parser = new Parser();
 
   sockfd = socket(AF_INET,SOCK_STREAM,0);
 
@@ -35,29 +50,26 @@ int OpenServerCommand::execute() {
     return -2;
   }
 
-  // Cant run new thread with myThread, so made a new one and moved it.
-  // The new thread runs startListening in the back until flag is off.
-  thread tmp(startListening, sockfd, address);
-  this->myThread = move(tmp);
-
-  // TODO who ends this loop? flag + join() = something is wrong here..
+  // listen until a connection is made.
   while(this->listening) {
-    this->myThread.join();
+    if(listen(sockfd,MAX_CLIENTS) == -1) {
+      sleep(250);
+      continue;
+    }
+    client_sock = accept(sockfd, (struct sockaddr*)&address, (socklen_t*)&address);
+    if (client_sock == -1) {
+      sleep(250);
+      continue;
+    }
+    // connection made, close listening socket.
+    this->listening = false;
+    close(sockfd);
   }
+
+  //TODO how do i keep reading/writing in loop
+  valRead = read(client_sock,buffer,MAX_CHARS);
+  parser->updateMap(Lexer.analyzeLine(buffer));
+
+
   return 0;
-}
-
-void startListening(int sockfd, sockaddr_in address) {
-  int client_sock;
-
-  //TODO figure out how many 'clients' in our listening queue (currently 2).
-  if(listen(sockfd, 2) == -1) {
-    cerr<<"Error during listening command"<<endl;
-  }
-
-  client_sock = accept(sockfd, (struct sockaddr*)&address, (socklen_t*)&address);
-  if(client_sock == -1) {
-    cerr<<"Error accepting client's connection request"<<endl;
-  }
-
 }
