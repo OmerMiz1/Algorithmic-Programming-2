@@ -7,11 +7,10 @@
 
 #include "ConditionCommand.h"
 
-class IfCommand : public ConditionParser  {
-private:
-
+class IfCommand : public ConditionCommand  {
 public:
-
+  IfCommand(string cond);
+  virtual int execute() override;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__IFCOMMAND_H_

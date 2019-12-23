@@ -16,5 +16,6 @@ int DefineVarCommand::execute() {
   // var <var_name> = <var_value>, like: h0 = 10  or h0 = heading.
   // maybe create 3 Command classes?: ImportVar(<-), ExportVar(->), LocalVar(=).
 
+
   return 4;
 }

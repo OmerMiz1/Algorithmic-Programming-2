@@ -9,22 +9,14 @@
 #include <list>
 #include <string>
 #include <utility>
-#include "Condition.h"
-#include "Var.h"
+#include "ConditionCommand.h"
 #include "Command.h"
-#include "Parser.h"
+#include "Var.h"
 
-class LoopCommand : protected ConditionCommand {
- private:
-  unordered_map<string, list<pair<string, Command*>>::iterator> cmdMap;
-  unordered_map<string,Var*> varMap;
-
+class LoopCommand : public ConditionCommand {
  public:
-  LoopCommand(string condition, Parser* parser);
+  LoopCommand(string condition);
   virtual int execute() override;
-
-  /*void setVarMap(unordered_map<string,Var*>);
-  void setCommandMap(unordered_map<string, list<pair<string,Command*>>::iterator>);*/
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__LOOPCOMMAND_H_
