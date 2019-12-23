@@ -15,7 +15,7 @@
 
 using namespace std;
 
-int getParseType(string);
+/*int getParseType(string);*/
 int addOpenServerCmd(list<string>::iterator,list<pair<string,Command*>>);
 int addConnectServerCmd(list<string>::iterator,list<pair<string,Command*>>);
 int addDefineVarCmd(list<string>::iterator,list<pair<string,Command*>>);
@@ -33,42 +33,22 @@ void Parser::updateMap(list<string> input) {
   while(it != input.end()) {
     //TODO support local var like: "var h0 = heading"
 
-    switch(getParseType(*it)) {
-      case 1: {
-        advance(it,addOpenServerCmd(it, cmdList));
-        break;
-      }
-      case 2: {
-        advance(it,addConnectServerCmd(it, cmdList));
-        break;
-      }
-      case 3: {
-        advance(it,addDefineVarCmd(it, cmdList));
-        break;
-      }
-      case 4: {
-        advance(it, addPrintCmd(it, cmdList));
-        break;
-      }
-      case 5: {
-        advance(it, addSleepCmd(it, cmdList));
-        break;
-      }
-      case 6: {
-        advance(it, addWhileCmd(it, cmdList));
-        break;
-      }
-      case 7: {
-        advance(it, addIfCmd(it,cmdList));
-        break;
-      }
-      case 8: {
-        addOther(it, cmdList)
-        advance();
-        break;
-      }
-      default:
-        break;
+    if(it->compare("OpenServerCommand") == 0) {
+      advance(it,addOpenServerCmd(it, cmdList));
+    } else if (it->compare("connectControlClient")==0 ){
+      advance(it,addConnectServerCmd(it, cmdList));
+    } else if (it->compare("var")==0 ){
+      advance(it,addDefineVarCmd(it, cmdList));
+    } else if (it->compare("Print")==0 ){
+      advance(it, addPrintCmd(it, cmdList));
+    } else if (it->compare("Sleep")==0 ){
+      advance(it, addSleepCmd(it, cmdList));
+    } else if (it->compare("while")==0 ){
+      advance(it, addWhileCmd(it, cmdList));
+    } else if (it->compare("if")==0 ){
+      advance(it, addIfCmd(it,cmdList));
+    } else {
+      advance(it, addOther(it,cmdList));
     }
 
     if (it->compare("while") == 0 || it->compare("if") == 0) {
@@ -78,12 +58,6 @@ void Parser::updateMap(list<string> input) {
       string type = *it;
       string conditionVal = *(++it);
       Command *conditionCmd;
-
-      if (type.compare("while") == 0) {
-        conditionCmd = new LoopCommand(type+conditionVal);
-      } else {
-        conditionCmd = new IfCommand();
-      }
 
       // insert all tokens up until end of scope "}" reached.
       while ((++it)->compare("}") != 0) { // NOTE: no nested scopes.
@@ -136,7 +110,7 @@ void Parser::updateMap(list<string> input) {
   }
 }
 
-int getParseType(string str) {
+/*int getParseType(string str) {
   if(str.compare("OpenServerCommand") == 0) {
     return 1;
   } else if (str.compare("connectControlClient")==0 ){
@@ -154,7 +128,7 @@ int getParseType(string str) {
   } else {
     return 8;
   }
-}
+}*/
 
 int addOpenServerCmd(list<string>::iterator it, list<pair<string,Command*>> list) {
   ++it;
@@ -210,21 +184,35 @@ int addWhileCmd(list<string>::iterator it, list<pair<string, Command *>> list) {
   int tokensCount = 0;
 
 
-  //TODO continue building Parser here first ofall
+  //TODO continue building Parser here first of all
   ++it;
   ++tokensCount;
   string conditionVal = *it;
 
+  ++it;
+  ++tokensCount;
+  //TODO put the while loop in a dedicated function below.
 
+  // insert entire scope (tokens) into a list.
+  tokensCount += updateScopeTokens(it, innerScopeTokens);
 
-  // insert all tokens up until end of scope "}" reached.
-  while ((++it)->compare("}") != 0) { // NOTE: no nested scopes.
-    innerScopeTokens.emplace_back(*it);
-  }
+  // parse tokens into a command map (with a difference parser object!).
   parser->updateMap(innerScopeTokens);
-  Command* conditionCmd = new LoopCommand("while", parser->getCmdMap(), parser->getVarMap());
+  LoopCommand* conditionCmd = new LoopCommand(conditionVal);
+  conditionCmd->setCommandMap(parser->getCmdMap());
+  conditionCmd->setVarMap(parser->getVarMap());
+  //TODO not sure about this cast here. supposed to be fine.
+  list.emplace_back("while", dynamic_cast<Command*>(conditionCmd));
+  return tokensCount;
 }
 
 int addIfCmd(list<string>::iterator it, list<pair<string, Command *>> list) {
 
+}
+
+int updateScopeTokens(list<string>::iterator it, list<string> list) {
+  int count = 0;
+  for(count=0; it->compare("}") != 0; ++it, ++count;) { // NOTE: no nested scopes.
+    list.emplace_back(*it);
+  }
 }

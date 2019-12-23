@@ -12,6 +12,7 @@
 #include "Condition.h"
 #include "Var.h"
 #include "Command.h"
+#include "Parser.h"
 
 class LoopCommand : public Command {
  private:
@@ -19,14 +20,11 @@ class LoopCommand : public Command {
   unordered_map<string, list<pair<string,Command*>>::iterator> cmdMap;
   unordered_map<string,Var*> varMap;
 
-
  public:
-  LoopCommand(string name,unordered_map<string, list<pair<string,Command*>>::iterator> cmds,
-      unordered_map<string,Var*> vars): cmdMap(move(cmds)), varMap(move(vars)){}
-
-  void addVar(string name, string value);
-  void addCommand(string name, string value);
-  virtual int execute() override {};
+  LoopCommand(string condition, Parser parser);
+  virtual int execute() override;
+  /*void setVarMap(unordered_map<string,Var*>);
+  void setCommandMap(unordered_map<string, list<pair<string,Command*>>::iterator>);*/
 
 };
 
