@@ -10,8 +10,9 @@
 #include "DefineVarCommand.h"
 #include "Print.h"
 #include "Sleep.h"
-#include "ConditionParser.h"
+#include "ConditionCommand.h"
 #include "LoopCommand.h"
+#include "ConditionCommand.h"
 
 using namespace std;
 
@@ -22,17 +23,16 @@ int addDefineVarCmd(list<string>::iterator,list<pair<string,Command*>>);
 int addPrintCmd(list<string>::iterator,list<pair<string,Command*>>);
 int addSleepCmd(list<string>::iterator,list<pair<string,Command*>>);
 int addWhileCmd(list<string>::iterator,list<pair<string,Command*>>);
+int updateScopeTokens(list<string>::iterator, list<string>);
 
 
 void Parser::updateMap(list<string> input) {
   list<pair<string,Command*>> cmdList;
-  list<pair<string,Command*>> localVarList;
+  list<pair<string,Command*>> varList;
   auto it = input.begin();
 
   // Generates list of key-Command
   while(it != input.end()) {
-    //TODO support local var like: "var h0 = heading"
-
     if(it->compare("OpenServerCommand") == 0) {
       advance(it,addOpenServerCmd(it, cmdList));
     } else if (it->compare("connectControlClient")==0 ){
@@ -50,63 +50,16 @@ void Parser::updateMap(list<string> input) {
     } else {
       advance(it, addOther(it,cmdList));
     }
-
-    if (it->compare("while") == 0 || it->compare("if") == 0) {
-      list<string> innerScopeTokens;
-      string closeScopeToken("}");
-      Parser *parser = new Parser();
-      string type = *it;
-      string conditionVal = *(++it);
-      Command *conditionCmd;
-
-      // insert all tokens up until end of scope "}" reached.
-      while ((++it)->compare("}") != 0) { // NOTE: no nested scopes.
-        innerScopeTokens.emplace_back(*it);
-      }
-
-      parser->updateMap(innerScopeTokens);
-
-
-
-      /*
-      string type = *it;
-      string condition = *(++it);
-      Command *loopCmd = new LoopCommand((type+condition));
-      while (it->compare("}") != 0) {
-        string name = *it;
-        string value = *(++it);
-        if (name.compare("Print") == 0) {
-          loopCmd->addVar(name)
-        } else if (name.compare("Sleep")) {
-
-        } else if (*//*ASSIGNMENT*//*) {
-
-        }
-      }*/
-      cmdList.emplace_back(type, loopCmd);
-
-    } else if (it->compare("if") == 0) {
-
-    } else { // enters here if there is an assignment like "alt = 15"
-      auto var = varMap.find(*it);
-      //error - var not found in map.
-      if(var == varMap.end()) {
-        throw "Variable not found/declared: " + (*it);
-      }
-      string name = *it;
-      string value = *(++it);
-      cmdList.emplace_back(name, new DefineVarCommand(name, value));
-    }
     //TODO support FunctionCommands when done.
   }
 
-  // Generates a map of key-iterator (iterator points to appropriate object)
+  // Add Commands to their map.
   for(auto it = cmdList.begin(); it != cmdList.end(); it++) {
     this->cmdMap.emplace(it->first, it);
   }
-
-  for(auto it = localVarList.begin(); it != localVarList.end(); it++) {
-    this->localVarMap.emplace(it->first,it);
+  // Add Vars to their map.
+  for(auto it = varList.begin(); it != varList.end(); it++) {
+    this->varMap.emplace(it->first, it);
   }
 }
 
@@ -156,6 +109,9 @@ int addDefineVarCmd(list<string>::iterator it,list<pair<string,Command*>> cmds) 
   string value = *it;
   cmds.emplace_back(name, new DefineVarCommand(name, operation, value));
   return 4;
+
+
+
   /*if(operation.compare("=") == 0) { // = is for local variables
     localVarList.emplace_back(name, new DefineVarCommand(name, operation, value));
   } else { // -> and <- means server and client can access value
@@ -180,39 +136,41 @@ int addSleepCmd(list<string>::iterator it, list<pair<string, Command *>> list) {
 int addWhileCmd(list<string>::iterator it, list<pair<string, Command *>> list) {
   std::list<string> innerScopeTokens;
   string closeScopeToken("}");
-  Parser *parser = new Parser();
+  Parser* parser = new Parser();
   int tokensCount = 0;
 
-
-  //TODO continue building Parser here first of all
   ++it;
   ++tokensCount;
-  string conditionVal = *it;
-
+  string conditionVal(*it);
   ++it;
   ++tokensCount;
-  //TODO put the while loop in a dedicated function below.
 
   // insert entire scope (tokens) into a list.
   tokensCount += updateScopeTokens(it, innerScopeTokens);
-
   // parse tokens into a command map (with a difference parser object!).
   parser->updateMap(innerScopeTokens);
-  LoopCommand* conditionCmd = new LoopCommand(conditionVal);
-  conditionCmd->setCommandMap(parser->getCmdMap());
-  conditionCmd->setVarMap(parser->getVarMap());
+  ConditionCommand* cmd = new LoopCommand(conditionVal, parser);
+
   //TODO not sure about this cast here. supposed to be fine.
-  list.emplace_back("while", dynamic_cast<Command*>(conditionCmd));
+  list.emplace_back("while", cmd);
   return tokensCount;
 }
 
 int addIfCmd(list<string>::iterator it, list<pair<string, Command *>> list) {
 
 }
-
+/**
+ *
+ * @param it points to the condition token (1 token after the type token)
+ * @param list to update with current scopes tokens.
+ * @return a counter to how many tokens has been read, to advance iterator.
+ */
 int updateScopeTokens(list<string>::iterator it, list<string> list) {
   int count = 0;
-  for(count=0; it->compare("}") != 0; ++it, ++count;) { // NOTE: no nested scopes.
+
+  // NOTE: no nested scopes.
+  for(count=0; it->compare("}") != 0; ++it, ++count) {
     list.emplace_back(*it);
   }
+  return count;
 }

@@ -17,7 +17,6 @@ class Condition : Command {
     Interpreter *interpreter;
 
 public:
-    Condition(string str);
     void setVariables(string str);
     bool getState() const;
 };

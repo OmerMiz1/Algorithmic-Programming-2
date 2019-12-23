@@ -17,6 +17,7 @@ using namespace std;
 class OpenServerCommand : public Command {
  private:
   int port;
+  bool listening = true;
 
  public:
   OpenServerCommand(string port);

@@ -5,7 +5,7 @@
 #ifndef ALGORITHMICPROGRAMMINGPROJECT__IFCOMMAND_H_
 #define ALGORITHMICPROGRAMMINGPROJECT__IFCOMMAND_H_
 
-#include "ConditionParser.h"
+#include "ConditionCommand.h"
 
 class IfCommand : public ConditionParser  {
 private:

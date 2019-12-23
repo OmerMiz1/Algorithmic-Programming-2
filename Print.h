@@ -17,6 +17,9 @@ class Print : public Command {
 
  public:
   Print(string message) : msg(move(message)) {}
+  //TODO if string comes with "" than its a string, otherwise it a value.
+  /*need to make sure we handle these cases appropriately, make sure the lexer
+  doesnt throw away the "".*/
   virtual int execute() override {cout<<msg<<endl; return 2;}
 
 };

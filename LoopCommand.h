@@ -14,18 +14,17 @@
 #include "Command.h"
 #include "Parser.h"
 
-class LoopCommand : public Command {
+class LoopCommand : protected ConditionCommand {
  private:
-  Condition condition;
-  unordered_map<string, list<pair<string,Command*>>::iterator> cmdMap;
+  unordered_map<string, list<pair<string, Command*>>::iterator> cmdMap;
   unordered_map<string,Var*> varMap;
 
  public:
-  LoopCommand(string condition, Parser parser);
+  LoopCommand(string condition, Parser* parser);
   virtual int execute() override;
+
   /*void setVarMap(unordered_map<string,Var*>);
   void setCommandMap(unordered_map<string, list<pair<string,Command*>>::iterator>);*/
-
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__LOOPCOMMAND_H_

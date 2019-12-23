@@ -12,6 +12,9 @@ DefineVarCommand::DefineVarCommand(string name, string direction, string sim)
  * 2. Update data received  about var from the simulator.
  */
 int DefineVarCommand::execute() {
-  //TODO each arrow direction should be a Command !
+  //TODO support local variables. example:
+  // var <var_name> = <var_value>, like: h0 = 10  or h0 = heading.
+  // maybe create 3 Command classes?: ImportVar(<-), ExportVar(->), LocalVar(=).
+
   return 4;
 }

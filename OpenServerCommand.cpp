@@ -43,8 +43,10 @@ int OpenServerCommand::execute() {
     return -2;
   }
 
-  // loop ends when a connection is made or error was thrown
-  while(true) {
+
+  //TODO make loop run in its own thread - should end when error?
+  // should end when user requests?
+  while(this->listening == true) {
     // LISTEN
     if(listen(sockfd,MAX_CLIENTS) == -1) {
       sleep(250);
@@ -58,20 +60,13 @@ int OpenServerCommand::execute() {
       continue;
     }
 
-    // connection made, close listening socket.
-    close(sockfd);
-    break;
+    valRead = read(client_sock,buffer,MAX_CHARS);
+    string bufferStr(*buffer);
+
+    for (string str : Lexer::analyzeLine(bufferStr) {
+      //TODO implement this: partTake these instructions and do something about it.
+    }
   }
-
-  //TODO how do i keep reading/writing in loop
-  valRead = read(client_sock,buffer,MAX_CHARS);
-  string bufferStr(*buffer);
-
-  //TODO implement this part
-  for (string str : Lexer::analyzeLine(bufferStr) {
-    // Take thse instructions and do something about it.
-  }
-
 
   return 0;
 }
