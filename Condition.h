@@ -10,7 +10,9 @@
 #include "Command.h"
 
 class Condition : Command {
-  //TODO should be protected for LoopCommand to reuse
+    Condition(string str);
+
+//TODO should be protected for LoopCommand to reuse
     string left;
     string sign;
     string right;
