@@ -16,7 +16,7 @@
 class LoopCommand : public ConditionCommand {
  public:
   LoopCommand(string condition);
-  virtual int execute() override;
+  int execute(list<string>::iterator) override;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__LOOPCOMMAND_H_

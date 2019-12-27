@@ -21,7 +21,7 @@ class ConnectCommand : public Command {
   void sendToHost(const char *str);
   //TODO ~ConnectCommand if handles threads - remember to update D'tor.
   ~ConnectCommand();
-  virtual int execute() override;
+  int execute(list<string>::iterator) override;
   int skip() {
       return 3;
   }

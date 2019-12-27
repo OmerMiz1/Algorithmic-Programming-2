@@ -9,7 +9,7 @@
 //bellow c'tor invokes ConditionCommand's c'tor to initialize its fields.
 LoopCommand::LoopCommand(string condition): ConditionCommand(move(condition)) {}
 
-int LoopCommand::execute() {
+int LoopCommand::execute(list<string>::iterator it) {
   //TODO says i must have condition object here.
   while (ConditionCommand::execute()) {
     //TODO should be handled in a priority queue somehow, for now just the map

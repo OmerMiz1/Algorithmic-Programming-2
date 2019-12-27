@@ -12,13 +12,11 @@ using namespace std;
 
 class DefineVarCommand : public Command {
  private:
-  string name, direction, sim;
+  string name, operation, sim;
  public:
-
   //TODO can have: <- -> and = for assignment
-  DefineVarCommand(string name, string direction, string sim);// with <-\->
-  DefineVarCommand(string name, string value); // assignment (var = new value)
-  virtual int execute() override;
+  DefineVarCommand(string name, string operation, string sim);// with <-\->
+  int execute(list<string>::iterator) override;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__DEFINEVARCOMMAND_H_

@@ -3,3 +3,7 @@
 //
 
 #include "FuncCommand.h"
+
+int FuncCommand::execute(list<string>::iterator it) {
+  return 0;
+}

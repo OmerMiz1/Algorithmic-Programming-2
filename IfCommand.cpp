@@ -6,7 +6,7 @@
 #include <utility>
 
 IfCommand::IfCommand(string cond):ConditionCommand(move(cond)) {}
-int IfCommand::execute() {
+int IfCommand::execute(list<string>::iterator it) {
   //TODO says i must have condition object here.
   if (ConditionCommand::execute()) {
     //TODO should be handled in a priority queue somehow, for now just the map

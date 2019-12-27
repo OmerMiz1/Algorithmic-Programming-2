@@ -33,29 +33,22 @@ using namespace std;
 class Parser {
  private:
   int loopCount = 0, ifCount = 0;
-  unordered_map<string, list<pair<string,Var*>>::iterator> varMap;
-  unordered_map<string, list<pair<string,Command*>>::iterator> cmdMap;
+  list<pair<string, Var*>> varList;
+  list<pair<string, Command*>> cmdList;
 
-  int addOpenServerCmd(list<string>::iterator it,
-                       list<pair<string, Command *>> list);
-  int addConnectServerCmd(list<string>::iterator it,
-                          list<pair<string, Command *>> list);
-  int addDefineVarCmd(list<string>::iterator it,
-                      list<pair<string, Command *>> cmds);
-  int addPrintCmd(list<string>::iterator it,
-                  list<pair<string, Command *>> list);
-  int addSleepCmd(list<string>::iterator it,
-                  list<pair<string, Command *>> list);
-  int addConditionCmd(list<string>::iterator it,
-                      list<pair<string, Command *>> list);
-  int addAssignment(list<string>::iterator it,
-                    list<pair<string, Command *>> list);
+  int addOpenServerCmd(list<string>::iterator it);
+  int addConnectServerCmd(list<string>::iterator it);
+  int addDefineVarCmd(list<string>::iterator it);
+  int addPrintCmd(list<string>::iterator it);
+  int addSleepCmd(list<string>::iterator it);
+  int addConditionCmd(list<string>::iterator it);
+  int addAssignment(list<string>::iterator it);
 
  public:
-  ~Parser() = default;
-  void updateMap(list<string> input);
-  unordered_map<string,list<pair<string,Var*>>::iterator> getVarMap();
-  unordered_map<string, list<pair<string,Command*>>::iterator> getCmdMap();
+  ~Parser();
+  void genMap(list<string> input);
+  list<pair<string, Var*>> getVarList();
+  list<pair<string, Command*>> getCmdList();
 
 };
 

@@ -27,7 +27,7 @@ protected:
   unordered_map<string,list<pair<string,Var*>>>* globalVarMap;*/
 
 public:
-  virtual int execute() override;
+  int execute(list<string>::iterator) override;
   void setCommandMap(unordered_map<string,list<pair<string,Command *>>::iterator> newMap);
   void setVarMap(unordered_map<string,list<pair<string,Var*>>::iterator> newMap);
 };

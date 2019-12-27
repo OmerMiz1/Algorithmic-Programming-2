@@ -21,7 +21,7 @@ ConnectCommand::ConnectCommand(const char *port, const char *ip) {
     }
 }
 
-int ConnectCommand::execute() {
+int ConnectCommand::execute(list<string>::iterator it) {
     this->clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == -1) {
         throw "Failed to create client socket";

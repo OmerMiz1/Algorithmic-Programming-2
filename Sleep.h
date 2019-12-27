@@ -6,9 +6,12 @@
 #define ALGORITHMICPROGRAMMINGPROJECT__SLEEP_H_
 
 #include <zconf.h>
+#include <chrono>
 #include <string>
 #include <iostream>
+#include <thread>
 #include "Command.h"
+
 using namespace std;
 
 class Sleep : public Command {
@@ -16,14 +19,16 @@ class Sleep : public Command {
   int d;
 
  public:
-  Sleep(string duration) {
+  int execute(list<string>::iterator it) override {
+    ++it;
     try {
-      d = stoi(duration);
-    } catch(const char* e) {
-      cout<<e<<endl;
+      chrono::milliseconds duration(stoi(*it));
+      this_thread::sleep_for(duration);
+    } catch (const char* e) {
+      cerr<<e<<endl;
     }
-  };
-  virtual int execute() override {sleep(d); return 2;}
+    return 2;
+  }
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__SLEEP_H_
