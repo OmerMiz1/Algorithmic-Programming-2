@@ -7,7 +7,7 @@
 
 ConditionCommand::ConditionCommand(string cond): condition(move(cond)){}
 
-int ConditionCommand::execute() {
+int ConditionCommand::execute(list<string>::iterator it) {
   //TODO implement function. should return the Condition::getState() or smthing.
   return 0;
 }

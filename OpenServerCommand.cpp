@@ -11,20 +11,23 @@
 #include "Parser.h"
 using namespace std;
 
-OpenServerCommand::OpenServerCommand(string port)  {
+/*OpenServerCommand::OpenServerCommand(string port)  {
   try{
     this->port = stoi(port);
   } catch (const char* e) {
     cout<<e<<endl;
   }
-};
+};*/
 
-int OpenServerCommand::execute() {
-  int sockfd=0, client_sock=0, valRead=0;
+int OpenServerCommand::execute(list<string>::iterator it) {
+  int sockfd=0, client_sock=0, valRead=0, port;
   char *buffer[MAX_CHARS];
   sockaddr_in address{};
-
   Parser* parser = new Parser();
+
+  // Parse port token
+  ++it;
+  port = stoi(*it);
 
   // OPEN SOCKET
   sockfd = socket(AF_INET,SOCK_STREAM,0);
@@ -35,7 +38,7 @@ int OpenServerCommand::execute() {
 
   address.sin_family = AF_INET; // address is in IPv4
   address.sin_addr.s_addr = INADDR_ANY; // give me any ip alloc'd for my machine
-  address.sin_port = htons(this->port); // more info tirgul 6 page 32
+  address.sin_port = htons(port); // more info tirgul 6 page 32
 
   // BIND
   if(bind(sockfd, (struct sockaddr*)&address, sizeof(address)) == -1) {
@@ -43,10 +46,15 @@ int OpenServerCommand::execute() {
     return -2;
   }
 
+  this->port = port;
+  this->address = address;
+  return 2;
+}
 
+static void startListening(int sockfd, sockaddr_in address, bool* listening) {
   //TODO make loop run in its own thread - should end when error?
   // should end when user requests?
-  while(this->listening == true) {
+  while(*listening) {
     // LISTEN
     if(listen(sockfd,MAX_CLIENTS) == -1) {
       sleep(250);
@@ -68,5 +76,5 @@ int OpenServerCommand::execute() {
     }
   }
 
-  return 0;
 }
+

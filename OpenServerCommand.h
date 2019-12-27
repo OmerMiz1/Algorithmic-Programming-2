@@ -17,11 +17,11 @@ using namespace std;
 class OpenServerCommand : public Command {
  private:
   int port;
-  bool listening = true;
+  sockaddr_in address;
 
  public:
-  OpenServerCommand(string port);
-  virtual int execute();
+  /*OpenServerCommand(string port);*/
+  int execute(list<string>::iterator) override;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__OPENSERVERCOMMAND_H_

@@ -5,9 +5,10 @@
 #ifndef ALGORITHMICPROGRAMMINGPROJECT__COMMAND_H_
 #define ALGORITHMICPROGRAMMINGPROJECT__COMMAND_H_
 
+#include <list>
 class Command {
  public:
-  virtual int execute()=0;
+  virtual int execute(list<string>::iterator)=0;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__COMMAND_H_

@@ -10,7 +10,7 @@
 class IfCommand : public ConditionCommand  {
 public:
   IfCommand(string cond);
-  virtual int execute() override;
+  int execute(list<string>::iterator) override;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__IFCOMMAND_H_

@@ -7,12 +7,14 @@
 
 #include <string>
 #include <utility>
+#include <mutex>
 using namespace std;
 
 class Var {
  private:
-  string name;
+  string name, direction;
   float value;
+
   //TODO add string that indicates the var location in sim
 
  public:
