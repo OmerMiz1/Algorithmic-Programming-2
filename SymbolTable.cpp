@@ -18,6 +18,7 @@ float SymbolTable::getVariable(string name) {
     } else if (this->father != nullptr) {
         return this->father->getVariable(name);
     }
+    throw "Error getting a variable";
 }
 
 void SymbolTable::setVariable(string name, float num) {
@@ -58,7 +59,6 @@ map<string, float> SymbolTable::getOutgoing() {
     while (it != this->outgoing.end()) {
         temp[it->first] = it->second;
     }
-    this->outgoing.clear();
     return temp;
 }
 
@@ -88,4 +88,8 @@ void SymbolTable::addToOutgoing(string name, float num) {
     } else {
         this->father->addToOutgoing(name, num);
     }
+}
+
+void SymbolTable::clearOutgoing() {
+    this->outgoing.clear();
 }

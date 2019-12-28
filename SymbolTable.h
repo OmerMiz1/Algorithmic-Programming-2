@@ -38,6 +38,8 @@ public:
 
     map<string, float> updatedMap();
 
+    void clearOutgoing();
+
 private:
     void addToIngoing(string, string);
 
