@@ -18,17 +18,10 @@ public:
 
     ConnectCommand(SymbolTable *symbolTable);
 
-    static void addToCmdQueue(string);
-
-    static void addToCmdQueue(const char *);
-
     static void startSending(int clientSocket, SymbolTable *);
 
     int execute(list<string>::iterator) override;
 
-    int skip() {
-        return 3;
-    }
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__CONNECTCOMMAND_H_

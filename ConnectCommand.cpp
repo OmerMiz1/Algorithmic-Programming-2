@@ -66,12 +66,3 @@ void ConnectCommand::startSending(int clientSocket, SymbolTable *symbolTable1) {
         this_thread::sleep_for(100ms);
     }
 }
-
-void ConnectCommand::addToCmdQueue(string str) {
-    const char *temp = str.c_str();
-    ConnectCommand::addToCmdQueue(temp);
-}
-
-void ConnectCommand::addToCmdQueue(const char * temp) {
-    ConnectCommand::cmdQueue.push_front(temp);
-}
