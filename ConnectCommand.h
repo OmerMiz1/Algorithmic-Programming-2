@@ -11,20 +11,19 @@
 using namespace std;
 
 class ConnectCommand : public Command {
- private:
-  int port;
-  const char *ip;
-  int clientSocket;
+    static list<const char *> cmdQueue;
+public:
+    static void addToCmdQueue(string);
 
- public:
-  ConnectCommand(const char *port, const char *ip);
-  void sendToHost(const char *str);
-  //TODO ~ConnectCommand if handles threads - remember to update D'tor.
-  ~ConnectCommand();
-  int execute(list<string>::iterator) override;
-  int skip() {
-      return 3;
-  }
+    static void addToCmdQueue(const char *);
+
+    static void startSending(int clientSocket);
+
+    int execute(list<string>::iterator) override;
+
+    int skip() {
+        return 3;
+    }
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__CONNECTCOMMAND_H_
