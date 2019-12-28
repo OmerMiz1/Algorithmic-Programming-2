@@ -16,7 +16,10 @@ DefineVarCommand::DefineVarCommand(SymbolTable *symbolTable) : symbolTable(symbo
 int DefineVarCommand::execute(list<string>::iterator it) {
 
     Command *cmd;
-    ++it; // "var" advance to "<var_name>"
+    if (*it == "var"){
+        ++it; // "var" advance to "<var_name>"
+        //TODO check if exist
+    }
     string name = *it;
     ++it; // "<var_name> advance to "<operation_type>", {"<-", "->", "="}
     string direction = *it;
