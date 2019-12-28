@@ -310,3 +310,18 @@ Expression *Interpreter::build(queue<string *> postfix) {
     // should be the nested expression because of how the algorithm operates
     return expressions.top();
 }
+
+void Interpreter::setVariable(string name, double num) {
+    Variable *variable = new Variable(name, num);
+    if (this->variables[name] != nullptr) {
+        delete (this->variables[name]);
+    }
+    this->variables[name] = variable;
+}
+
+void Interpreter::setVariables(unordered_map<string, float> varMap) {
+    unordered_map<string, float>::iterator it = varMap.begin();
+    while (it != varMap.end()) {
+        this->setVariable(it->first, it->second);
+    }
+}

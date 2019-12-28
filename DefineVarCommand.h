@@ -7,16 +7,18 @@
 
 #include "Command.h"
 #include <string>
+#include <unordered_map>
 
 using namespace std;
 
 class DefineVarCommand : public Command {
- private:
-  string name, operation, sim;
- public:
-  //TODO can have: <- -> and = for assignment
-  DefineVarCommand(string name, string operation, string sim);// with <-\->
-  int execute(list<string>::iterator) override;
+private:
+    unordered_map<string, pair<string, string> > remoteVariables; // map of <name, pair<direction, simLocation> >
+    unordered_map<string, float > localVariables; // map of <name, value>
+public:
+    DefineVarCommand();
+
+    int execute(list<string>::iterator) override;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__DEFINEVARCOMMAND_H_
