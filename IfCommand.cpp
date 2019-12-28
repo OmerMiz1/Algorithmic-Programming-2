@@ -5,7 +5,8 @@
 #include "IfCommand.h"
 #include <utility>
 
-IfCommand::IfCommand(string cond):ConditionCommand(move(cond)) {}
+IfCommand::IfCommand(SymbolTable *table):ConditionCommand(table) {}
+
 int IfCommand::execute(list<string>::iterator it) {
   //TODO says i must have condition object here.
   if (ConditionCommand::execute()) {

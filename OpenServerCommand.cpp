@@ -5,25 +5,21 @@
 #define MAX_CHARS 1024
 #define MAX_CLIENTS 1
 
-
 #include "OpenServerCommand.h"
-#include "Lexer.h"
-#include "Parser.h"
+
 using namespace std;
 
-/*OpenServerCommand::OpenServerCommand(string port)  {
-  try{
-    this->port = stoi(port);
-  } catch (const char* e) {
-    cout<<e<<endl;
-  }
-};*/
+OpenServerCommand::OpenServerCommand(SymbolTable *sym): symTable(sym) {}
 
+/** Creates a listening socket, listen to socket with independent thread.
+ *
+ * @param it points to "OpenServerCommand" token followed by "<port_val>"
+ * @return number of tokens to advance in main loop.
+ */
 int OpenServerCommand::execute(list<string>::iterator it) {
-  int sockfd=0, client_sock=0, valRead=0, port;
-  char *buffer[MAX_CHARS];
+  int sockfd=0, client_sock=0, port=0;
   sockaddr_in address{};
-  Parser* parser = new Parser();
+  running = true;
 
   // Parse port token
   ++it;
@@ -32,8 +28,8 @@ int OpenServerCommand::execute(list<string>::iterator it) {
   // OPEN SOCKET
   sockfd = socket(AF_INET,SOCK_STREAM,0);
   if(sockfd == -1) {
-    cerr<<"Could not create a socket."<<endl;
-    return -1;
+    running = false;
+    throw "Could not create a socket.";
   }
 
   address.sin_family = AF_INET; // address is in IPv4
@@ -42,38 +38,83 @@ int OpenServerCommand::execute(list<string>::iterator it) {
 
   // BIND
   if(bind(sockfd, (struct sockaddr*)&address, sizeof(address)) == -1) {
-    cerr<<"Could not bind the socket to an IP"<<endl;
-    return -2;
+    running = false;
+    throw "Could not bind the socket to an IP";
   }
 
-  this->port = port;
-  this->address = address;
+  // LISTEN
+  if(listen(sockfd,MAX_CLIENTS) == -1) {
+    running = false;
+    throw "Error listening to to port";
+  }
+
+  // ACCEPT
+  client_sock = accept(sockfd, (struct sockaddr*)&address, (socklen_t*)&address);
+  if (client_sock == -1) {
+    running = false;
+    throw "Error accepting client";
+  }
+
+  // IF ALL OK, CREATE LISTENING THREAD
+  try {
+    thread th(startListening, client_sock, symTable);
+    th.detach();
+  } catch (const char* e) {
+    throw e;
+  }
+
   return 2;
 }
 
-static void startListening(int sockfd, sockaddr_in address, bool* listening) {
-  //TODO make loop run in its own thread - should end when error?
-  // should end when user requests?
-  while(*listening) {
-    // LISTEN
-    if(listen(sockfd,MAX_CLIENTS) == -1) {
-      sleep(250);
-      continue;
+/** Listens to simulator requests 10 times a second and update the variables
+ * that were defined to be updated in the '.txt' file.
+ *
+ * @param client_sock client's socket generated at OpenServerCommand::execute().
+ * @param symTable to update.
+ */
+void OpenServerCommand::startListening(int client_sock, SymbolTable *symTable) {
+  int valRead;
+  char buffer[MAX_CHARS];
+  string bufferStr;
+
+  // Initialize clock variables for putting thread to sleep.
+  chrono::milliseconds duration,timePassed;
+  chrono::steady_clock::time_point start, end;
+  duration = chrono::milliseconds(100);
+  unordered_map<string, int> pathToIndexMap = Parser::parseXml("../generic_small.xml");
+
+  // The listening loop, will break only if running will become false.
+  while(running) {
+    // Start clock
+    start = chrono::steady_clock::now();
+
+    // Read to buffer until the entire message is received (might be cut midway)
+    do {
+      valRead = read(client_sock,buffer,MAX_CHARS);
+
+      // Error reading
+      if (valRead < 0) {
+        running = false;
+        throw "Error reading from simulator.";
+      }
+
+      bufferStr.append(buffer);
+    } while (bufferStr.back() == '\n');
+
+    unordered_map<int, float> newVals = Parser::parseServerOutput(bufferStr);
+
+    // Update variables declared '<-' in the global SymbolTable.
+    for(auto pair : symTable->getIngoing()) {
+      int index = pathToIndexMap[pair.second];
+      symTable->setVariable(pair.first, newVals[index]);
     }
 
-    // ACCEPT
-    client_sock = accept(sockfd, (struct sockaddr*)&address, (socklen_t*)&address);
-    if (client_sock == -1) {
-      sleep(250);
-      continue;
-    }
+    // End clock and then calculate time passed.
+    end = chrono::steady_clock::now();
+    timePassed = chrono::duration_cast<chrono::milliseconds>(end-start);
 
-    valRead = read(client_sock,buffer,MAX_CHARS);
-    string bufferStr(*buffer);
-
-    for (string str : Lexer::analyzeLine(bufferStr) {
-      //TODO implement this: partTake these instructions and do something about it.
-    }
+    // Read from server at-most 10 times a second (can be less)
+    this_thread::sleep_for(duration-timePassed);
   }
 
 }

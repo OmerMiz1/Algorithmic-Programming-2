@@ -12,20 +12,18 @@
 using namespace std;
 
 class Print : public Command {
- private:
-  string msg;
-
  public:
-  Print(string message) : msg(move(message)) {}
-  //TODO if string comes with "" than its a string, otherwise it a value.
-  /*need to make sure we handle these cases appropriately, make sure the lexer
-  doesnt throw away the "".*/
+
+  /** Prints a message (at it+1)
+   *
+   * @param it pointer to "Print" token.
+   * @return how many tokens to jump.
+   */
   int execute(list<string>::iterator it) override {
     ++it;
     cout<<*it<<endl;
     return 2;
   }
-
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__PRINT_H_

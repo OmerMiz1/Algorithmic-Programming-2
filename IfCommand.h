@@ -8,8 +8,8 @@
 #include "ConditionCommand.h"
 
 class IfCommand : public ConditionCommand  {
-public:
-  IfCommand(string cond);
+ public:
+  IfCommand(SymbolTable*);
   int execute(list<string>::iterator) override;
 };
 

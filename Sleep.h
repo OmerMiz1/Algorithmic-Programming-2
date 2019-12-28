@@ -15,17 +15,19 @@
 using namespace std;
 
 class Sleep : public Command {
- private:
-  int d;
-
  public:
+  /** Puts calling thread to sleep for (it+1) ms.
+   *
+   * @param it points to "Sleep" token.
+   * @return number of tokens to advance in calling loop.
+   */
   int execute(list<string>::iterator it) override {
     ++it;
     try {
       chrono::milliseconds duration(stoi(*it));
       this_thread::sleep_for(duration);
     } catch (const char* e) {
-      cerr<<e<<endl;
+      throw e;
     }
     return 2;
   }

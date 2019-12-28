@@ -12,26 +12,18 @@
 #include "Command.h"
 #include "Condition.h"
 #include "Var.h"
+#include "SymbolTable.h"
 
 using namespace std;
 
 class ConditionCommand : public Command {
 protected:
-    unordered_map<string, float> *symbolTable; // map of <name, value>
-    //TODO support global vars/cmds
-    /*unordered_map<string,list<pair<string,Var*>>> varMap;
-    unordered_map<string,list<pair<string,Var*>>>* globalVarMap;*/
+    SymbolTable *symTable;
+    //TODO support global vars
 
 public:
-    ConditionCommand(unordered_map<string, float> *symbolTable, );
-
+    explicit ConditionCommand(SymbolTable *table);
     int execute(list<string>::iterator) override;
-
-    virtual bool done() = 0;
-
-    void setCommandMap(unordered_map<string, list<pair<string, Command *>>::iterator> newMap);
-
-    void setVarMap(unordered_map<string, list<pair<string, Var *>>::iterator> newMap);
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__CONDITIONCOMMAND_H_

@@ -3,50 +3,165 @@
 
 #include "Parser.h"
 
-int updateScopeTokens(list<string>::iterator it, list<string> list);
-
 using namespace std;
 
-void Parser::genMap(list<string> input) {
-  auto it = input.begin();
+/**
+ * @param map includes all possible command objects.
+ */
+Parser::Parser(unordered_map<string,Command*>map): cmdMap(map){}
 
-  // Generates list of key-Command
-  while(it != input.end()) {
-    if(it->compare("OpenServerCommand") == 0) {
-      advance(it,addOpenServerCmd(it));
-    } else if (it->compare("connectControlClient")==0 ){
-      advance(it,addConnectServerCmd(it));
-    } else if (it->compare("var")==0 ){
-      advance(it,addDefineVarCmd(it));
-    } else if (it->compare("Print")==0 ){
-      advance(it, addPrintCmd(it));
-    } else if (it->compare("Sleep")==0 ){
-      advance(it, addSleepCmd(it));
-    } else if (it->compare("while")==0 || it->compare("if")==0){
-      advance(it, addConditionCmd(it));
-    } else {
-      advance(it, addAssignment(it));
-    }
-    //TODO support FunctionCommands when done.
-  }
+Parser::~Parser() {
+  this->cmdMap.clear();
 }
 
-list<pair<string, Command*>> Parser::getCmdList() {
+/** Calls the command execution's function.
+ *
+ * @param it points to current token cmd. If name isnt recognized by map, its
+ * an assignment command which will be treated using DefineVarCommand
+ * @return How many tokens to jump to get to next command.
+ */
+int Parser::parseCommand(list<string>::iterator it) {
+  auto currCmd = this->cmdMap.find(*it);
+
+  // Cmd found in map, just executes
+  if (currCmd != this->cmdMap.end()) {
+    return currCmd->second->execute(it);
+
+  // Cmd not in map so it is an assignment.
+  } else {
+    return this->cmdMap.find("var")->second->execute(it);
+  }
+
+  //TODO support FunctionCommands when done.
+  /*if(it->compare("OpenServerCommand") == 0) {
+      this->cmdMap.find("OpenServerCommand")->second->execute(it);
+    } else if (it->compare("connectControlClient")==0 ){
+      this->cmdMap.find("connectControlClient")->second->execute(it);
+    } else if (it->compare("var")==0 ){
+      this->cmdMap.find("var")->second->execute(it);
+    } else if (it->compare("Print")==0 ){
+       this->cmdMap.find("Print")->second->execute(it);
+    } else if (it->compare("Sleep")==0 ){
+       this->cmdMap.find("Sleep")->second->execute(it);
+    } else if (it->compare("while")==0 ) {
+       this->cmdMap.find("while")->second->execute(it);
+    } else if (it->compare("if")==0 ) {
+       this->cmdMap.find("if")->second->execute(it);
+    } else {
+
+    }*/
+}
+
+/**
+ *
+ * @param path to the xml file.
+ * @return Map<VAR_NAME, INDEX_BY_XML>. With that map OpenServerCommand can find
+ * the appropriate value for specific variable, read from simulator.
+ */
+unordered_map<string,int> Parser::parseXml(const char* path) {
+  smatch match;
+  string str;
+  ifstream file(path);
+  unordered_map<string, int> symTable;
+
+   /* Regex find lines starting with <name> and ending with </name> from xml and
+      keeps w/e is between them.*/
+  regex varPathRx("\\s*<name>(.*)<\\/name>");
+
+  // Iterates each line in XML, index each path accordingly.
+  for(int index=0; getline(file, str); ) {
+    if(regex_search(str, match, varPathRx)){
+      symTable.emplace(match[1],index);
+      index++;
+    }
+  }
+  return symTable;
+}
+
+/**
+ *
+ * @param OpenServerCommand sends the incoming string. String looks like:
+ * {0.0,32.4,33.1,....} and should have 36 or so floats.
+ * @return Map<INDEX, VALUE> with updated values from serer.
+ */
+unordered_map<int,float> Parser::parseServerOutput(string incoming) {
+  unordered_map<int,float> result;
+  smatch rxMatch;
+
+  // Regex find all floats the brackets.
+  regex floatsRx("(\\w|\\.)+");
+  regex_search(incoming, rxMatch, floatsRx);
+  int index = 0;
+
+  // Index each float value.
+  for(string match : rxMatch) {
+    result.emplace(index, stof(match));
+    index++;
+  }
+  return result;
+}
+
+/**
+ *
+ * @param it points to the condition token (1 token after the type token)
+ * @param list to update with current scopes tokens.
+ * @return a counter to how many tokens has been read, to advance iterator.
+ */
+//TODO should be used in ConditionCommand when parsing scope
+int updateScopeTokens(list<string>::iterator it, list<string> list) {
+  int count = 0;
+
+  // NOTE: no nested scopes.
+  for(count=0; it->compare("}") != 0; ++it, ++count) {
+    list.emplace_back(*it);
+  }
+  return count;
+}
+
+/*list<pair<string, Command*>> Parser::getCmdList() {
   return this->cmdList;
 }
 
 list<pair<string, Var*>> Parser::getVarList() {
   return this->varList;
-}
-
-/*int Parser::addOpenServerCmd(list<string>::iterator it) {
-  ++it;
-  string port = *it;
-  this->cmdList.emplace_back("OpenDataServer", new OpenServerCommand(port));
-  return ;
 }*/
 
-int Parser::addConnectServerCmd(list<string>::iterator it) {
+/*int getParseType(string str) {
+  if(str.compare("OpenServerCommand") == 0) {
+    return 1;
+  } else if (str.compare("connectControlClient")==0 ){
+    return 2;
+  } else if (str.compare("var")==0 ){
+    return 3;
+  } else if (str.compare("Print")==0 ){
+    return 4;
+  } else if (str.compare("Sleep")==0 ){
+    return 5;
+  } else if (str.compare("while")==0 ){
+    return 6;
+  } else if (str.compare("if")==0 ){
+    return 7;
+  } else {
+    return 8;
+  }
+}*/
+
+/*
+int Parser::addPrintCmd(list<string>::iterator it) {
+  string name = *it;
+  ++it;
+  this->cmdList.emplace_back(name, new Print(*it));
+  return 2;
+}*/
+
+/*int Parser::addSleepCmd(list<string>::iterator it) {
+  string name = *it;
+  ++it;
+  this->cmdList.emplace_back(name, new Sleep(*it));
+  return 2;
+}*/
+
+/*int Parser::addConnectServerCmd(list<string>::iterator it) {
   ++it;
   string ip = *it;
   ++it;
@@ -80,20 +195,6 @@ int Parser::addDefineVarCmd(list<string>::iterator it) {
   this->cmdList.emplace_back(name, new DefineVarCommand(name, operation, value));
   return 4; // next command token is 4 tokens ahead.
 }
-/*
-int Parser::addPrintCmd(list<string>::iterator it) {
-  string name = *it;
-  ++it;
-  this->cmdList.emplace_back(name, new Print(*it));
-  return 2;
-}*/
-
-/*int Parser::addSleepCmd(list<string>::iterator it) {
-  string name = *it;
-  ++it;
-  this->cmdList.emplace_back(name, new Sleep(*it));
-  return 2;
-}*/
 
 int Parser::addConditionCmd(list<string>::iterator it) {
   std::list<string> innerScopeTokens;
@@ -127,7 +228,7 @@ int Parser::addConditionCmd(list<string>::iterator it) {
 
   // Insert entire scope (tokens) into a list. Then let local parser parse it.
   tokensCount += updateScopeTokens(it, innerScopeTokens);
-  parser->genMap(innerScopeTokens);
+  parser->parseCommand(innerScopeTokens);
 
   // Initialize command with condition, then inject the local parser's results.
   cmd->setCommandMap(parser->getCmdList());
@@ -150,40 +251,4 @@ int Parser::addAssignment(list<string>::iterator it) {
 
   //TODO continue working on parser from here!
   return tokensCount;
-}
-
-/**
- *
- * @param it points to the condition token (1 token after the type token)
- * @param list to update with current scopes tokens.
- * @return a counter to how many tokens has been read, to advance iterator.
- */
-int updateScopeTokens(list<string>::iterator it, list<string> list) {
-  int count = 0;
-
-  // NOTE: no nested scopes.
-  for(count=0; it->compare("}") != 0; ++it, ++count) {
-    list.emplace_back(*it);
-  }
-  return count;
-}
-
-/*int getParseType(string str) {
-  if(str.compare("OpenServerCommand") == 0) {
-    return 1;
-  } else if (str.compare("connectControlClient")==0 ){
-    return 2;
-  } else if (str.compare("var")==0 ){
-    return 3;
-  } else if (str.compare("Print")==0 ){
-    return 4;
-  } else if (str.compare("Sleep")==0 ){
-    return 5;
-  } else if (str.compare("while")==0 ){
-    return 6;
-  } else if (str.compare("if")==0 ){
-    return 7;
-  } else {
-    return 8;
-  }
 }*/

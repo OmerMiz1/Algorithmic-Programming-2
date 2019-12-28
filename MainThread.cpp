@@ -1,37 +1,50 @@
 //
-// Created by omer on 27/12/2019.
-//
 
 #include "MainThread.h"
+
+/** Parses each line in the text file and executes using the parser.
+ *  Also acts as the main thread where Server and Client are detaching from.
+ *
+ * @return 0 if no errors.
+ */
 int MainThread::execute() {
-  Lexer *lexer = new Lexer();
-  Parser *parser = new Parser();
+  Parser *parser;
+  list<string> tokens;
+  list<string>::iterator it;
+  SymbolTable* symTable = new SymbolTable();
+  unordered_map<string,Command*> cmdMap;
 
-  parser->genMap(lexer->analyzeCode("../fly.txt"));
+  // Init commands map and give it to new Parser object.
+  initCommands(&cmdMap, symTable);
+  parser = new Parser(cmdMap);
 
-  this->varList = parser->getVarList();
-  this->cmdList = parser->getCmdList();
-  this->genMaps();
+  // Turn file into tokens.
+  tokens = Lexer::analyzeCode("../fly.txt");
 
-  // execute commands by order
-  while(this->running) {
-    for(pair<string,Command*> c : this->cmdList) {
-      if(c.first.compare("OpenServerCommand") == 0) {
-        c.second->setState(&(this->running));
-        thread t1(c.second->execute);
-      } else if (c.first.compare("ConnectControlClient")) {
-        c.second->setState(&(this->running));
-        thread t2(c.second->execute());
-      } else {
-        c.second->execute();
-      }
-    }
+  // Each iteration executes a line from the '.txt' file.
+  for(it = tokens.begin(); it != tokens.end();) {
+    advance(it, parser->parseCommand(it));
   }
 
   return 0;
 }
 
-void MainThread::genMaps() {
+/** Initializes the commands map.
+ *
+ * @param map to initialize
+ * @param symTable, some commands need to initialize.
+ */
+void MainThread::initCommands(unordered_map<string, Command*> *map,SymbolTable *symTable) {
+  map->emplace("OpenServerCommand", new OpenServerCommand(symTable));
+  map->emplace("ConnectControlClient", new ConnectCommand(symTable));
+  map->emplace("var", new DefineVarCommand(symTable));
+  map->emplace("Print", new Print());
+  map->emplace("Sleep", new Sleep());
+  map->emplace("while", new LoopCommand(symTable));
+  map->emplace("if", new IfCommand(symTable));
+}
+
+/*void MainThread::genMaps() {
   list<pair<string,Var*>>::iterator it1;
   list<pair<string,Command*>>::iterator it2;
 
@@ -44,4 +57,4 @@ void MainThread::genMaps() {
   for(it2 = this->cmdList.begin(); it2 != this->cmdList.end(); ++it1) {
     this->varMap.emplace(it1->first, it1);
   }
-}
+}*/
