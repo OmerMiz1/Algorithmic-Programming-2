@@ -6,6 +6,7 @@
 #define ALGORITHMICPROGRAMMINGPROJECT__DEFINEVARCOMMAND_H_
 
 #include "Command.h"
+#include "SymbolTable.h"
 #include <string>
 #include <unordered_map>
 
@@ -13,11 +14,9 @@ using namespace std;
 
 class DefineVarCommand : public Command {
 private:
-    unordered_map<string, pair<string, string> > remoteVariables; // map of <name, pair<direction, simLocation> >
-    unordered_map<string, float > localVariables; // map of <name, value>
+    SymbolTable *symbolTable;
 public:
-    DefineVarCommand();
-
+    DefineVarCommand(SymbolTable *symbolTable);
     int execute(list<string>::iterator) override;
 };
 

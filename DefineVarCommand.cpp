@@ -1,11 +1,12 @@
 //
-// Created by omer on 19/12/2019.
+// Created by Dor on 19/12/2019.
 //
+
 #include <utility>
 #include "DefineVarCommand.h"
 #include "Expression.h"
 
-DefineVarCommand::DefineVarCommand() {}
+DefineVarCommand::DefineVarCommand(SymbolTable *symbolTable) : symbolTable(symbolTable) {}
 
 /*
  * Execution has 2 options:
@@ -18,20 +19,20 @@ int DefineVarCommand::execute(list<string>::iterator it) {
     ++it; // "var" advance to "<var_name>"
     string name = *it;
     ++it; // "<var_name> advance to "<operation_type>", {"<-", "->", "="}
-    string operation = *it;
+    string direction = *it;
     ++it; // "<operation_type>" advance to "<var_value>" {value \ another var}
     string value = *it;
 
-    if (operation.compare("->") == 0 || operation.compare("<-") == 0) {
-        this->remoteVariables[name] = make_pair(operation, value);
-    } else if (operation.compare("=") == 0) {
+    if (direction.compare("->") == 0 || direction.compare("<-") == 0) {
+        this->symbolTable->setRemoteVariable(name, direction, value);
+    } else if (direction.compare("=") == 0) {
         Interpreter *interpreter = new Interpreter();
-        interpreter->setVariables(this->localVariables);
+        interpreter->setVariables(this->symbolTable->updatedMap());
         Expression *expression = interpreter->interpret(value);
-        this->localVariables[name] = expression->calculate();
+        this->symbolTable->setVariable(name, expression->calculate());
     } else {
         //TODO this line is only for debugging, remove before done
-        throw "ERROR in add defineVarCommand with:" + name + " " + operation + " " + value;
+        throw "ERROR in add defineVarCommand with:" + name + " " + direction + " " + value;
     }
     return 4; // next command token is 4 tokens ahead.
 }

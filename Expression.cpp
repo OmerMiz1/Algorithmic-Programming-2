@@ -319,8 +319,8 @@ void Interpreter::setVariable(string name, double num) {
     this->variables[name] = variable;
 }
 
-void Interpreter::setVariables(unordered_map<string, float> varMap) {
-    unordered_map<string, float>::iterator it = varMap.begin();
+void Interpreter::setVariables(map<string, float> varMap) {
+    map<string, float>::iterator it = varMap.begin();
     while (it != varMap.end()) {
         this->setVariable(it->first, it->second);
     }

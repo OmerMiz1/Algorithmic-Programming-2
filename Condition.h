@@ -9,7 +9,7 @@
 #include "Expression.h"
 #include "Command.h"
 
-class Condition : Command {
+class Condition {
     Condition(string str);
 
 //TODO should be protected for LoopCommand to reuse

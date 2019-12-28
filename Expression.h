@@ -8,7 +8,6 @@
 #include <string>
 #include <map>
 #include <queue>
-#include <unordered_map>
 
 using namespace std;
 
@@ -144,7 +143,7 @@ public:
 
     void setVariable(string, double);
 
-    void setVariables(unordered_map<string, float >);
+    void setVariables(map<string, float >);
 
     Expression *interpret(string);
 

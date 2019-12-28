@@ -1,6 +1,4 @@
 //
-// Created by Dor on 19/12/2019.
-//
 
 #include "ConnectCommand.h"
 #include <utility>
@@ -13,6 +11,11 @@
 #include <thread>
 
 using namespace std;
+
+//
+// Created by Dor on 19/12/2019.
+
+ConnectCommand::ConnectCommand(const SymbolTable &symbolTable) : symbolTable(symbolTable) {}
 
 int ConnectCommand::execute(list<string>::iterator it) {
     ++it;
@@ -37,26 +40,29 @@ int ConnectCommand::execute(list<string>::iterator it) {
     if (isConnect == -1) {
         throw "Failed to connect to client server";
     }
-    thread th(ConnectCommand::startSending, clientSocket);
+    thread th(ConnectCommand::startSending, clientSocket, this->symbolTable);
     th.detach();
     return 3;
 }
 
-void ConnectCommand::startSending(int clientSocket) {
-    if (!ConnectCommand::cmdQueue.empty()) {
-        auto it = cmdQueue.begin();
-        while (it != cmdQueue.end()) {
-            int isSent = send(clientSocket, *it, strlen(*it), 0);
-            if (isSent == -1) {
-                throw "Failed to send string to host";
-            }
-            char buffer[1024] = {0};
-            read(clientSocket, buffer, 1024);
-            clog << buffer << endl;
-        }
-    } else {
-        this_thread::sleep_for(100ms);
-    }
+void ConnectCommand::startSending(int clientSocket, SymbolTable *symbolTable1) {
+    map<string, float> outgoing = symbolTable1->getOutgoing();
+    symbolTable1->clearOutgoing();
+    //TODO send to client correctly + get variables from symbolTable
+//    if (!ConnectCommand::cmdQueue.empty()) {
+//        auto it = cmdQueue.begin();
+//        while (it != cmdQueue.end()) {
+//            int isSent = send(clientSocket, *it, strlen(*it), 0);
+//            if (isSent == -1) {
+//                throw "Failed to send string to host";
+//            }
+//            char buffer[1024] = {0};
+//            read(clientSocket, buffer, 1024);
+//            clog << buffer << endl;
+//        }
+//    } else {
+//        this_thread::sleep_for(100ms);
+//    }
 }
 
 void ConnectCommand::addToCmdQueue(string str) {

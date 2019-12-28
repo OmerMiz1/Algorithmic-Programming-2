@@ -15,21 +15,23 @@
 
 using namespace std;
 
-class ConditionCommand: public Command{
+class ConditionCommand : public Command {
 protected:
-  // C'tor may only be invoked from a subclass, we decide the condition types.
-  ConditionCommand(string cond);
-  string condition;
-  unordered_map<string, list<pair<string,Command*>>::iterator> cmdMap;
-  unordered_map<string, list<pair<string,Var*>>::iterator> varMap;
-  //TODO support global vars/cmds
-  /*unordered_map<string,list<pair<string,Var*>>> varMap;
-  unordered_map<string,list<pair<string,Var*>>>* globalVarMap;*/
+    unordered_map<string, float> *symbolTable; // map of <name, value>
+    //TODO support global vars/cmds
+    /*unordered_map<string,list<pair<string,Var*>>> varMap;
+    unordered_map<string,list<pair<string,Var*>>>* globalVarMap;*/
 
 public:
-  int execute(list<string>::iterator) override;
-  void setCommandMap(unordered_map<string,list<pair<string,Command *>>::iterator> newMap);
-  void setVarMap(unordered_map<string,list<pair<string,Var*>>::iterator> newMap);
+    ConditionCommand(unordered_map<string, float> *symbolTable, );
+
+    int execute(list<string>::iterator) override;
+
+    virtual bool done() = 0;
+
+    void setCommandMap(unordered_map<string, list<pair<string, Command *>>::iterator> newMap);
+
+    void setVarMap(unordered_map<string, list<pair<string, Var *>>::iterator> newMap);
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__CONDITIONCOMMAND_H_

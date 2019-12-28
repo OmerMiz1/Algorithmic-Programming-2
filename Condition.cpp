@@ -28,6 +28,7 @@ void Condition::setVariables(string str) {
 }
 
 bool Condition::getState() const {
+    //TODO update interpreter variables
     Expression *tempLeft = this->interpreter->interpret(this->left);
     Expression *tempRight = this->interpreter->interpret(this->right);
     if (this->sign == "=") {
