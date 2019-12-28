@@ -48,21 +48,23 @@ int ConnectCommand::execute(list<string>::iterator it) {
 void ConnectCommand::startSending(int clientSocket, SymbolTable *symbolTable1) {
     map<string, float> outgoing = symbolTable1->getOutgoing();
     symbolTable1->clearOutgoing();
-    //TODO send to client correctly + get variables from symbolTable
-//    if (!ConnectCommand::cmdQueue.empty()) {
-//        auto it = cmdQueue.begin();
-//        while (it != cmdQueue.end()) {
-//            int isSent = send(clientSocket, *it, strlen(*it), 0);
-//            if (isSent == -1) {
-//                throw "Failed to send string to host";
-//            }
-//            char buffer[1024] = {0};
-//            read(clientSocket, buffer, 1024);
-//            clog << buffer << endl;
-//        }
-//    } else {
-//        this_thread::sleep_for(100ms);
-//    }
+    if (!outgoing.empty()) {
+        auto it = outgoing.begin();
+        while (it != outgoing.end()) {
+            string command;
+            command = "set " + it->first + " " + to_string(it->second) + "\r\n";
+            const char * temp = command.c_str();
+            int isSent = send(clientSocket, temp, strlen(temp), 0);
+            if (isSent == -1) {
+                throw "Failed to send string to host";
+            }
+            char buffer[1024] = {0};
+            read(clientSocket, buffer, 1024);
+            clog << buffer << endl;
+        }
+    } else {
+        this_thread::sleep_for(100ms);
+    }
 }
 
 void ConnectCommand::addToCmdQueue(string str) {
