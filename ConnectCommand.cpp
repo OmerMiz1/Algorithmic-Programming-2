@@ -15,7 +15,7 @@ using namespace std;
 //
 // Created by Dor on 19/12/2019.
 
-ConnectCommand::ConnectCommand(const SymbolTable &symbolTable) : symbolTable(symbolTable) {}
+ConnectCommand::ConnectCommand(SymbolTable *symbolTable) : symbolTable(symbolTable) {}
 
 int ConnectCommand::execute(list<string>::iterator it) {
     ++it;

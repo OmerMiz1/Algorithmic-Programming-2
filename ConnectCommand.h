@@ -12,11 +12,11 @@
 using namespace std;
 
 class ConnectCommand : public Command {
-    SymbolTable symbolTable;
+    SymbolTable *symbolTable;
     static list<const char *> cmdQueue;
 public:
 
-    ConnectCommand(const SymbolTable &symbolTable);
+    ConnectCommand(SymbolTable *symbolTable);
 
     static void addToCmdQueue(string);
 
