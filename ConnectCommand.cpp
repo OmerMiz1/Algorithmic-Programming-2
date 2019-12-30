@@ -1,21 +1,16 @@
 //
 
 #include "ConnectCommand.h"
-#include <utility>
-#include <sys/socket.h>
-#include <string>
-#include <iostream>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <thread>
+
+
 
 using namespace std;
 
 //
 // Created by Dor on 19/12/2019.
 
-ConnectCommand::ConnectCommand(SymbolTable *symbolTable) : symbolTable(symbolTable) {}
+ConnectCommand::ConnectCommand(SymbolTable *symbolTable, ProgramState* state)
+: symbolTable(symbolTable), programState(state){}
 
 int ConnectCommand::execute(list<string>::iterator it) {
     ++it;
@@ -26,52 +21,82 @@ int ConnectCommand::execute(list<string>::iterator it) {
     try {
         port = stoi(portString);
     } catch (...) {
+        programState->turnOff();
         throw "Port not valid";
     }
-    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+    this->clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == -1) {
+        programState->turnOff();
         throw "Failed to create client socket";
     }
+
     sockaddr_in address;
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = inet_addr(ip);
     address.sin_port = htons(port);
     int isConnect = connect(clientSocket, (struct sockaddr *) &address, sizeof(address));
+
     if (isConnect == -1) {
+        programState->turnOff();
         throw "Failed to connect to client server";
     }
-    thread th(ConnectCommand::startSending, clientSocket, this->symbolTable);
+
+    thread th(&ConnectCommand::startSending, this);
     th.detach();
     return 3;
 }
 
-void ConnectCommand::startSending(int clientSocket, SymbolTable *symbolTable1) {
-    map<string, float> outgoing = symbolTable1->getOutgoing();
-    symbolTable1->clearOutgoing();
-    if (!outgoing.empty()) {
-        auto it = outgoing.begin();
-        while (it != outgoing.end()) {
-            string command;
-            command = "set " + it->first + " " + to_string(it->second) + "\r\n";
-            const char * temp = command.c_str();
-            int isSent = send(clientSocket, temp, strlen(temp), 0);
-            if (isSent == -1) {
-                throw "Failed to send string to host";
-            }
-            char buffer[1024] = {0};
-            read(clientSocket, buffer, 1024);
-            clog << buffer << endl;
-        }
-    } else {
-        this_thread::sleep_for(100ms);
-    }
-}
+void ConnectCommand::startSending() {
+    map<string, float> outgoing = symbolTable->getOutgoing();
+    symbolTable->clearOutgoing();
+    chrono::milliseconds duration,timePassed;
+    chrono::steady_clock::time_point start, end;
+    duration = chrono::milliseconds(100);
 
-void ConnectCommand::addToCmdQueue(string str) {
-    const char *temp = str.c_str();
-    ConnectCommand::addToCmdQueue(temp);
+    while(programState->getState()) {
+      // Start clock
+      start = chrono::steady_clock::now();
+
+      if (!outgoing.empty()) {
+          auto it = outgoing.begin();
+          while (it != outgoing.end()) {
+          string command;
+          command = "set " + it->first + " " + to_string(it->second) + "\r\n";
+          const char * temp = command.c_str();
+          int isSent = send(clientSocket, temp, strlen(temp), 0);
+          if (isSent == -1) {
+            programState->turnOff();
+            throw "Failed to send string to host";
+          }
+          char buffer[1024] = {0};
+          read(clientSocket, buffer, 1024);
+          clog << buffer << endl;
+        }
+      }
+
+      // End clock and then calculate time passed.
+      end = chrono::steady_clock::now();
+      timePassed = chrono::duration_cast<chrono::milliseconds>(end-start);
+
+      // Loop every 0.1s minimum, if time passed is longer then 0.1s continue.
+      if(duration.count()-timePassed.count() > 0) {
+        this_thread::sleep_for(duration-timePassed);
+      }
+    }
+
+    //TODO clear memory? asking cause its static func.
 }
 
 void ConnectCommand::addToCmdQueue(const char * temp) {
     ConnectCommand::cmdQueue.push_front(temp);
+}
+
+void ConnectCommand::addToCmdQueue(string str) {
+  const char *temp = str.c_str();
+  ConnectCommand::addToCmdQueue(temp);
+}
+
+void ConnectCommand::setState(ProgramState* state) {
+  programState = state;
 }

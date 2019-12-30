@@ -16,16 +16,18 @@
 #include "Command.h"
 #include "SymbolTable.h"
 #include "Parser.h"
+#include "ProgramState.h"
 
 using namespace std;
 class OpenServerCommand : public Command {
  private:
+  int client_sock;
   SymbolTable *symTable;
-  static bool running;
-  static void startListening(int, SymbolTable*);
+  ProgramState* programState;
+  void startListening();
 
  public:
-  explicit OpenServerCommand(SymbolTable *symTable);
+  OpenServerCommand(SymbolTable*, ProgramState*);
   int execute(list<string>::iterator) override;
 
 };

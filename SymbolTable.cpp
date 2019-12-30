@@ -11,6 +11,7 @@ SymbolTable::SymbolTable() {
 SymbolTable::SymbolTable(SymbolTable *father) : father(father) {}
 
 float SymbolTable::getVariable(string name) {
+    lock_guard<mutex> lock(this->mtx);
     if (!this->recursiveContains(name)) {
         throw "Asked for non existing variable " + name;
     } else if (this->contains(name)) {
@@ -22,6 +23,7 @@ float SymbolTable::getVariable(string name) {
 }
 
 void SymbolTable::setVariable(string name, float num) {
+    lock_guard<mutex> lock(this->mtx);
     if (!this->contains(name) && this->recursiveContains(name)) {
         this->father->setVariable(name, num);
     } else {
@@ -31,6 +33,7 @@ void SymbolTable::setVariable(string name, float num) {
 }
 
 void SymbolTable::setRemoteVariable(string name, string direction, string simLocation) {
+    lock_guard<mutex> lock(this->mtx);
     this->remoteVariables[name] = make_pair(direction, simLocation);
     if (direction == "<-") {
         addToIngoing(name, simLocation);
@@ -50,10 +53,12 @@ bool SymbolTable::recursiveContains(string name) {
 }
 
 map<string, string> SymbolTable::getIngoing() {
+    lock_guard<mutex> lock(this->mtx);
     return this->ingoing;
 }
 
 map<string, float> SymbolTable::getOutgoing() {
+    lock_guard<mutex> lock(this->mtx);
     map<string, float> temp;
     auto it = this->outgoing.begin();
     while (it != this->outgoing.end()) {
@@ -63,6 +68,7 @@ map<string, float> SymbolTable::getOutgoing() {
 }
 
 map<string, float> SymbolTable::updatedMap() {
+    lock_guard<mutex> lock(this->mtx);
     map<string, float> temp;
     if (this->father != nullptr) {
         temp = this->father->updatedMap();
@@ -75,10 +81,12 @@ map<string, float> SymbolTable::updatedMap() {
 }
 
 void SymbolTable::addToIngoing(string name, string simLocation) {
+    lock_guard<mutex> lock(this->mtx);
     this->ingoing[name] = simLocation;
 }
 
 void SymbolTable::addToOutgoing(string name, float num) {
+    lock_guard<mutex> lock(this->mtx);
     if (this->father == nullptr) {
         if (this->remoteVariables.count(name)) {
             if (this->remoteVariables[name].first == "->") {
@@ -91,5 +99,6 @@ void SymbolTable::addToOutgoing(string name, float num) {
 }
 
 void SymbolTable::clearOutgoing() {
+    lock_guard<mutex> lock(this->mtx);
     this->outgoing.clear();
 }

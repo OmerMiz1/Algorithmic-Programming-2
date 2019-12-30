@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_map>
 #include <map>
+#include <mutex>
 
 using namespace std;
 
@@ -17,6 +18,8 @@ class SymbolTable {
     unordered_map<string, float> localVariables; // map of <name, value>
     map<string, string> ingoing;
     map<string, float> outgoing;
+    mutex mtx;
+
 public:
     SymbolTable();
 

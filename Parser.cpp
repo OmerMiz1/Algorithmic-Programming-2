@@ -3,15 +3,16 @@
 
 #include "Parser.h"
 
+
 using namespace std;
 
 /**
  * @param map includes all possible command objects.
  */
-Parser::Parser(unordered_map<string,Command*>map): cmdMap(map){}
+Parser::Parser(unordered_map<string,Command*>*map): cmdMap(map){}
 
 Parser::~Parser() {
-  this->cmdMap.clear();
+  this->cmdMap->clear();
 }
 
 /** Calls the command execution's function.
@@ -21,15 +22,15 @@ Parser::~Parser() {
  * @return How many tokens to jump to get to next command.
  */
 int Parser::parseCommand(list<string>::iterator it) {
-  auto currCmd = this->cmdMap.find(*it);
+  auto currCmd = this->cmdMap->find(*it);
 
   // Cmd found in map, just executes
-  if (currCmd != this->cmdMap.end()) {
+  if (currCmd != this->cmdMap->end()) {
     return currCmd->second->execute(it);
 
   // Cmd not in map so it is an assignment.
   } else {
-    return this->cmdMap.find("var")->second->execute(it);
+    return this->cmdMap->find("var")->second->execute(it);
   }
 
   //TODO support FunctionCommands when done.
@@ -227,7 +228,7 @@ int Parser::addConditionCmd(list<string>::iterator it) {
   ++tokensCount;
 
   // Insert entire scope (tokens) into a list. Then let local parser parse it.
-  tokensCount += updateScopeTokens(it, innerScopeTokens);
+  tokensCount += countScopeTokens(it, innerScopeTokens);
   parser->parseCommand(innerScopeTokens);
 
   // Initialize command with condition, then inject the local parser's results.

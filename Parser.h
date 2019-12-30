@@ -13,15 +13,17 @@
 #include <regex>
 
 #include "Command.h"
+#include "SymbolTable.h"
+
 
 using namespace std;
 
 class Parser {
  private:
-  unordered_map<string,Command*> cmdMap;
+  unordered_map<string,Command*> *cmdMap;
 
  public:
-  explicit Parser(unordered_map<string,Command*>);
+  explicit Parser(unordered_map<string,Command*> *);
   ~Parser();
 
   int parseCommand(list<string>::iterator);

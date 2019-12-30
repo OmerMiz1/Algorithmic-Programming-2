@@ -19,20 +19,29 @@
 #include "DefineVarCommand.h"
 #include "LoopCommand.h"
 #include "IfCommand.h"
-#include "Sleep.h"
 #include "Print.h"
+#include "Sleep.h"
+#include "ProgramState.h"
 
 
 class MainThread : Command {
  private:
-  void initCommands(unordered_map<string, Command*>*, SymbolTable*);
+  Parser *parser;
+  SymbolTable *symTable;
+  unordered_map<string,Command*> *cmdMap = new unordered_map<string,Command*>;
+  ProgramState *programState = new ProgramState();
+  void initCommands();
 
  public:
+  MainThread();
+  explicit MainThread(SymbolTable*);
+  ~MainThread();
 
-  //TODO link running state for OpenServerCommand, ConnectCommand, MainThread
+  //TODO link running programState for OpenServerCommand, ConnectCommand, MainThread
   // if 1 of them gets an error and stops, the rest will release all memory and
   // return.
-  virtual int execute();
+  int execute(list<string>::iterator) override;
+  int execute();
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__MAINTHREAD_H_

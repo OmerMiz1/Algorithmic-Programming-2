@@ -9,7 +9,7 @@
 
 class IfCommand : public ConditionCommand  {
  public:
-  IfCommand(SymbolTable*);
+  IfCommand(Command*);
   int execute(list<string>::iterator) override;
 };
 

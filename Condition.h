@@ -6,19 +6,19 @@
 #define ALGORITHMICPROGRAMMINGPROJECT_CONDITION_H
 
 
+
+#include <regex>
+#include <string>
 #include "Expression.h"
 #include "Command.h"
 
 class Condition {
-    Condition(string str);
-
-//TODO should be protected for LoopCommand to reuse
     string left;
     string sign;
     string right;
     Interpreter *interpreter;
-
 public:
+    explicit Condition(string str);
     void setVariables(string str);
     bool getState() const;
 };

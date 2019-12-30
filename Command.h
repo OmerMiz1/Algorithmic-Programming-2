@@ -6,7 +6,9 @@
 #define ALGORITHMICPROGRAMMINGPROJECT__COMMAND_H_
 
 #include <list>
+#include <string>
 
+using namespace std;
 class Command {
  public:
   virtual int execute(list<string>::iterator)=0;

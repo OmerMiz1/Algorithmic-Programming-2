@@ -3,18 +3,16 @@
 //
 
 #include "IfCommand.h"
-#include <utility>
 
-IfCommand::IfCommand(SymbolTable *table):ConditionCommand(table) {}
+IfCommand::IfCommand(Command* main):ConditionCommand(main) {}
 
 int IfCommand::execute(list<string>::iterator it) {
-  //TODO says i must have condition object here.
-  if (ConditionCommand::execute()) {
-    //TODO should be handled in a priority queue somehow, for now just the map
-    for(auto it : this->cmdMap) {
-      it.second->second->execute();
-      // remove cmd from list somehow? wrap it so it can remove itself?
-    }
+  int numOfTokens = ConditionCommand::execute(it);
+  advance(it, 2); // skip first line 1st token: type 2nd token: value
+
+  // Call inner (sub) MainThread execute with if's body scope.
+  if(this->myCondition->getState()) {
+    this->myMain->execute(it);
   }
-  return 0;
+  return numOfTokens;
 }

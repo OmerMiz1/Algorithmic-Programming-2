@@ -9,7 +9,8 @@
 
 using namespace std;
 
-OpenServerCommand::OpenServerCommand(SymbolTable *sym): symTable(sym) {}
+OpenServerCommand::OpenServerCommand(SymbolTable *sym, ProgramState* state)
+: symTable(sym), programState(state) {}
 
 /** Creates a listening socket, listen to socket with independent thread.
  *
@@ -17,9 +18,8 @@ OpenServerCommand::OpenServerCommand(SymbolTable *sym): symTable(sym) {}
  * @return number of tokens to advance in main loop.
  */
 int OpenServerCommand::execute(list<string>::iterator it) {
-  int sockfd=0, client_sock=0, port=0;
+  int sockfd=0, port=0;
   sockaddr_in address{};
-  running = true;
 
   // Parse port token
   ++it;
@@ -28,7 +28,7 @@ int OpenServerCommand::execute(list<string>::iterator it) {
   // OPEN SOCKET
   sockfd = socket(AF_INET,SOCK_STREAM,0);
   if(sockfd == -1) {
-    running = false;
+    programState->turnOff();
     throw "Could not create a socket.";
   }
 
@@ -38,28 +38,29 @@ int OpenServerCommand::execute(list<string>::iterator it) {
 
   // BIND
   if(bind(sockfd, (struct sockaddr*)&address, sizeof(address)) == -1) {
-    running = false;
+    programState->turnOff();
     throw "Could not bind the socket to an IP";
   }
 
   // LISTEN
   if(listen(sockfd,MAX_CLIENTS) == -1) {
-    running = false;
+    programState->turnOff();
     throw "Error listening to to port";
   }
 
   // ACCEPT
-  client_sock = accept(sockfd, (struct sockaddr*)&address, (socklen_t*)&address);
+  this->client_sock = accept(sockfd, (struct sockaddr*)&address, (socklen_t*)&address);
   if (client_sock == -1) {
-    running = false;
+    programState->turnOff();
     throw "Error accepting client";
   }
 
   // IF ALL OK, CREATE LISTENING THREAD
   try {
-    thread th(startListening, client_sock, symTable);
+    thread th(&OpenServerCommand::startListening, this);
     th.detach();
   } catch (const char* e) {
+    programState->turnOff();
     throw e;
   }
 
@@ -72,7 +73,7 @@ int OpenServerCommand::execute(list<string>::iterator it) {
  * @param client_sock client's socket generated at OpenServerCommand::execute().
  * @param symTable to update.
  */
-void OpenServerCommand::startListening(int client_sock, SymbolTable *symTable) {
+void OpenServerCommand::startListening() {
   int valRead;
   char buffer[MAX_CHARS];
   string bufferStr;
@@ -84,17 +85,16 @@ void OpenServerCommand::startListening(int client_sock, SymbolTable *symTable) {
   unordered_map<string, int> pathToIndexMap = Parser::parseXml("../generic_small.xml");
 
   // The listening loop, will break only if running will become false.
-  while(running) {
+  while(programState->getState()) {
     // Start clock
     start = chrono::steady_clock::now();
-
     // Read to buffer until the entire message is received (might be cut midway)
     do {
       valRead = read(client_sock,buffer,MAX_CHARS);
 
       // Error reading
       if (valRead < 0) {
-        running = false;
+        programState->turnOff();
         throw "Error reading from simulator.";
       }
 
@@ -114,7 +114,9 @@ void OpenServerCommand::startListening(int client_sock, SymbolTable *symTable) {
     timePassed = chrono::duration_cast<chrono::milliseconds>(end-start);
 
     // Read from server at-most 10 times a second (can be less)
-    this_thread::sleep_for(duration-timePassed);
+    if(duration.count()-timePassed.count() > 0) {
+      this_thread::sleep_for(duration-timePassed);
+    }
   }
 
 }
