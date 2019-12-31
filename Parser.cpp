@@ -3,7 +3,6 @@
 
 #include "Parser.h"
 
-
 using namespace std;
 
 /**
@@ -22,8 +21,8 @@ Parser::~Parser() {
  * @return How many tokens to jump to get to next command.
  */
 int Parser::parseCommand(list<string>::iterator it) {
-  auto currCmd = this->cmdMap->find(*it);
-
+  unordered_map<string,Command*>::iterator currCmd = this->cmdMap->find(*it);
+  
   // Cmd found in map, just executes
   if (currCmd != this->cmdMap->end()) {
     return currCmd->second->execute(it);
@@ -32,25 +31,7 @@ int Parser::parseCommand(list<string>::iterator it) {
   } else {
     return this->cmdMap->find("var")->second->execute(it);
   }
-
   //TODO support FunctionCommands when done.
-  /*if(it->compare("OpenServerCommand") == 0) {
-      this->cmdMap.find("OpenServerCommand")->second->execute(it);
-    } else if (it->compare("connectControlClient")==0 ){
-      this->cmdMap.find("connectControlClient")->second->execute(it);
-    } else if (it->compare("var")==0 ){
-      this->cmdMap.find("var")->second->execute(it);
-    } else if (it->compare("Print")==0 ){
-       this->cmdMap.find("Print")->second->execute(it);
-    } else if (it->compare("Sleep")==0 ){
-       this->cmdMap.find("Sleep")->second->execute(it);
-    } else if (it->compare("while")==0 ) {
-       this->cmdMap.find("while")->second->execute(it);
-    } else if (it->compare("if")==0 ) {
-       this->cmdMap.find("if")->second->execute(it);
-    } else {
-
-    }*/
 }
 
 /**

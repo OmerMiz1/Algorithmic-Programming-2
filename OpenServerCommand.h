@@ -9,9 +9,9 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
+#include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <zconf.h>
 
 #include "Command.h"
 #include "SymbolTable.h"
@@ -21,9 +21,11 @@
 using namespace std;
 class OpenServerCommand : public Command {
  private:
-  int client_sock;
+  int client_sock = 0;
+  thread myThread;
   SymbolTable *symTable;
   ProgramState* programState;
+
   void startListening();
 
  public:

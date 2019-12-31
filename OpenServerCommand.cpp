@@ -76,7 +76,7 @@ int OpenServerCommand::execute(list<string>::iterator it) {
 void OpenServerCommand::startListening() {
   int valRead;
   char buffer[MAX_CHARS];
-  string bufferStr;
+  string bufferStr1, bufferStr2;
 
   // Initialize clock variables for putting thread to sleep.
   chrono::milliseconds duration,timePassed;
@@ -98,10 +98,10 @@ void OpenServerCommand::startListening() {
         throw "Error reading from simulator.";
       }
 
-      bufferStr.append(buffer);
-    } while (bufferStr.back() == '\n');
+      bufferStr1.append(buffer);
+    } while (bufferStr1.back() == '\n');
 
-    unordered_map<int, float> newVals = Parser::parseServerOutput(bufferStr);
+    unordered_map<int, float> newVals = Parser::parseServerOutput(bufferStr1);
 
     // Update variables declared '<-' in the global SymbolTable.
     for(auto pair : symTable->getIngoing()) {

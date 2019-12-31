@@ -62,8 +62,8 @@ int MainThread::execute(list<string>::iterator) {
  * @param symTable, some commands need to initialize.
  */
 void MainThread::initCommands() {
-  cmdMap->emplace("OpenServerCommand", new OpenServerCommand(symTable, programState));
-  cmdMap->emplace("ConnectControlClient", new ConnectCommand(symTable, programState));
+  cmdMap->emplace("openDataServer", new OpenServerCommand(symTable, programState));
+  cmdMap->emplace("connectControlClient", new ConnectCommand(symTable, programState));
   cmdMap->emplace("var", new DefineVarCommand(symTable));
   cmdMap->emplace("Print", new Print());
   cmdMap->emplace("Sleep", new Sleep());

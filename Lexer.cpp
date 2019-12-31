@@ -7,6 +7,7 @@
 #include <iostream>
 #include <regex>
 #include <list>
+#include <algorithm>
 
 
 using namespace std;
@@ -16,6 +17,7 @@ list<string> Lexer::analyzeCode(const char *file) {
     string str;
     ifstream fileStream(file);
     while (getline(fileStream, str)) {
+      
         list<string> temp = analyzeLine(str);
         for (auto it : temp) {
             tokens.emplace_back(it);
@@ -52,6 +54,7 @@ list<string> Lexer::analyzeLine(string str) {
         smatch m;
         regex_search(str, m, re);
         tokens.emplace_back("connectControlClient");
+        //TODO ip is parsed as \"127.0.0.1\"
         tokens.emplace_back(m[1]);
         tokens.emplace_back(m[2]);
     } else if (startsWith("var", str)) {
