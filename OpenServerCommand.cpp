@@ -100,14 +100,14 @@ void OpenServerCommand::startListening() {
                 throw "Error reading from simulator.";
             }
 
+            //TODO create func to iterate string until first /n appears.
             bufferStr1.append(buffer);
             it = bufferStr1.end();
             --it;
 
         } while (*it != '\n');
 
-        cout << bufferStr1 << endl; //TODO clear before submitting
-
+        //cout << bufferStr1+"\n\n" << endl; //TODO clear before submitting
         unordered_map<int, float> newVals = Parser::parseServerOutput(bufferStr1);
 
         // Update variables declared '<-' in the global SymbolTable.
