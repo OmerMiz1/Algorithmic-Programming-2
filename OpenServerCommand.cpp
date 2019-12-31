@@ -43,16 +43,17 @@ int OpenServerCommand::execute(list<string>::iterator it) {
   }
 
   // LISTEN
-  if(listen(sockfd,MAX_CLIENTS) == -1) {
+  if(listen(sockfd, MAX_CLIENTS) == -1) {
     programState->turnOff();
     throw "Error listening to to port";
   }
 
   // ACCEPT
-  this->client_sock = accept(sockfd, (struct sockaddr*)&address, (socklen_t*)&address);
-  if (client_sock == -1) {
-    programState->turnOff();
-    throw "Error accepting client";
+  while(!(this->client_sock = accept(sockfd, (struct sockaddr*)&address, (socklen_t*)&address))) {
+    if (client_sock == -1) {
+      programState->turnOff();
+      throw "Error accepting client";
+    }
   }
 
   // IF ALL OK, CREATE LISTENING THREAD
