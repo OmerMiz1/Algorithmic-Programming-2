@@ -77,7 +77,7 @@ int OpenServerCommand::execute(list<string>::iterator it) {
 void OpenServerCommand::startListening() {
     int valRead;
     char buffer[MAX_CHARS];
-    string bufferStr1, bufferStr2;
+    string bufStr1, bufStr2;
     string::iterator it;
 
     // Initialize clock variables for putting thread to sleep.
@@ -99,19 +99,32 @@ void OpenServerCommand::startListening() {
                 programState->turnOff();
                 throw "Error reading from simulator.";
             }
-
             //TODO create func to iterate string until first /n appears.
-            bufferStr1.append(buffer);
-            it = bufferStr1.end();
-            --it;
+            bufStr1.append(buffer);
+            int firstEol = bufStr1.find_first_of('\n');
 
-        } while (*it != '\n');
+            if(firstEol != string::npos) {
+                auto it = bufStr1.begin();
+                advance(it, firstEol);
+                bufStr2.append(it, bufStr1.end());
+                break;
+            }
+        } while (true);
 
-        //cout << bufferStr1+"\n\n" << endl; //TODO clear before submitting
-        unordered_map<int, float> newVals = Parser::parseServerOutput(bufferStr1);
+
+        cout <<bufStr1.length() << "\n" << endl; //TODO clear before submitting
+        unordered_map<int, float> newVals = Parser::parseServerOutput(bufStr1);
+
+        // Swap buffers and clear the 2nd.
+        bufStr1.clear();
+        bufStr1 = bufStr2;
+        bufStr2.clear();
 
         // Update variables declared '<-' in the global SymbolTable.
         for (auto pair : symTable->getIngoing()) {
+            /* pair.first == "name" , pair.second == "path"
+             * newVals.first == "index", newVals.second == "value"
+             * */
             int index = pathToIndexMap[pair.second];
             symTable->setVariable(pair.first, newVals[index]);
         }
@@ -125,6 +138,5 @@ void OpenServerCommand::startListening() {
             this_thread::sleep_for(duration - timePassed);
         }
     }
-
 }
 
