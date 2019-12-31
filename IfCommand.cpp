@@ -4,15 +4,15 @@
 
 #include "IfCommand.h"
 
-IfCommand::IfCommand(Command* main):ConditionCommand(main) {}
+IfCommand::IfCommand(Command *main) : ConditionCommand(main) {}
 
 int IfCommand::execute(list<string>::iterator it) {
-  int numOfTokens = ConditionCommand::execute(it);
-  advance(it, 2); // skip first line 1st token: type 2nd token: value
+    int numOfTokens = ConditionCommand::execute(it);
+    advance(it, 2); // skip first line 1st token: type 2nd token: value
 
-  // Call inner (sub) MainThread execute with if's body scope.
-  if(this->myCondition->getState()) {
-    this->myMain->execute(it);
-  }
-  return numOfTokens;
+    // Call inner (sub) MainThread execute with if's body scope.
+    if (this->myCondition->getState()) {
+        this->myMain->execute(it);
+    }
+    return numOfTokens;
 }

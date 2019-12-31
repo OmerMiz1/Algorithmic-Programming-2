@@ -9,9 +9,10 @@
 #include <string>
 
 using namespace std;
+
 class Command {
- public:
-  virtual int execute(list<string>::iterator)=0;
+public:
+    virtual int execute(list<string>::iterator) = 0;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__COMMAND_H_

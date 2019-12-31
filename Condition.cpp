@@ -6,6 +6,7 @@
 
 
 using namespace std;
+
 Condition::Condition(string str) {
     regex re("\\s*(.*) (=|<|>|<=|>=|!=) (.*)");
     smatch m;

@@ -4,15 +4,15 @@
 
 #include "ConditionCommand.h"
 
-ConditionCommand::ConditionCommand(Command* main): myMain(main) {}
+ConditionCommand::ConditionCommand(Command *main) : myMain(main) {}
 
 int ConditionCommand::execute(list<string>::iterator it) {
-  int count = countScopeTokens(it);
+    int count = countScopeTokens(it);
 
-  // 1st token is the "condtion type" and 2nd is the condition itself (string).
-  ++it;
-  this->myCondition = new Condition(*it);
-  return count;
+    // 1st token is the "condtion type" and 2nd is the condition itself (string).
+    ++it;
+    this->myCondition = new Condition(*it);
+    return count;
 }
 
 /**
@@ -22,17 +22,17 @@ int ConditionCommand::execute(list<string>::iterator it) {
  * @return a counter to how many tokens has been read, to advance iterator.
  */
 int ConditionCommand::countScopeTokens(list<string>::iterator it) {
-  int count = 0, scopesCount = 1;
+    int count = 0, scopesCount = 1;
 
-  // In case of inner scopes, keeps counting until the relevant end of scope.
-  for(count=0; it->compare("}") != 0 && scopesCount > 0; ++it, ++count) {
-    if(it->compare("if") == 0 || it->compare("while") == 0) { // New scope found
-      scopesCount++;
-    } else if (it->compare("}") == 0) { // End of scope found.
-      scopesCount--;
+    // In case of inner scopes, keeps counting until the relevant end of scope.
+    for (count = 0; it->compare("}") != 0 && scopesCount > 0; ++it, ++count) {
+        if (it->compare("if") == 0 || it->compare("while") == 0) { // New scope found
+            scopesCount++;
+        } else if (it->compare("}") == 0) { // End of scope found.
+            scopesCount--;
+        }
     }
-  }
-  return count;
+    return count;
 }
 
 

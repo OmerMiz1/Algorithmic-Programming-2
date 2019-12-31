@@ -143,7 +143,7 @@ public:
 
     void setVariable(string, double);
 
-    void setVariables(map<string, float >);
+    void setVariables(map<string, float>);
 
     Expression *interpret(string);
 

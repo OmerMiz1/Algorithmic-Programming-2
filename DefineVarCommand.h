@@ -17,6 +17,7 @@ private:
     SymbolTable *symbolTable;
 public:
     DefineVarCommand(SymbolTable *symbolTable);
+
     int execute(list<string>::iterator) override;
 };
 

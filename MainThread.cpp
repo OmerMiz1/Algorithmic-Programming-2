@@ -6,7 +6,7 @@
  *
  */
 MainThread::MainThread() {
-  this->symTable = new SymbolTable();
+    this->symTable = new SymbolTable();
 }
 
 /** Instantiate a new sub-scope.
@@ -14,13 +14,13 @@ MainThread::MainThread() {
  * @param table
  */
 MainThread::MainThread(SymbolTable *table) {
-  this->symTable = new SymbolTable(table);
+    this->symTable = new SymbolTable(table);
 }
 
 MainThread::~MainThread() {
-  delete this->symTable;
-  delete this->parser;
-  this->cmdMap->clear();
+    delete this->symTable;
+    delete this->parser;
+    this->cmdMap->clear();
 }
 
 /** Command interface forces to implement execute with iterator, so made this 1
@@ -29,8 +29,8 @@ MainThread::~MainThread() {
  * @return
  */
 int MainThread::execute() {
-  list<string>::iterator it;
-  return execute(it);
+    list<string>::iterator it;
+    return execute(it);
 }
 
 /** Parses each line in the text file and executes using the parser.
@@ -39,21 +39,21 @@ int MainThread::execute() {
  * @return 0 if no errors.
  */
 int MainThread::execute(list<string>::iterator) {
-  list<string> tokens;
-  list<string>::iterator it;
+    list<string> tokens;
+    list<string>::iterator it;
 
-  // Init commands map and give it to new Parser object.
-  initCommands();
-  this->parser = new Parser(cmdMap);
+    // Init commands map and give it to new Parser object.
+    initCommands();
+    this->parser = new Parser(cmdMap);
 
-  // Turn file into tokens.
-  tokens = Lexer::analyzeCode("../fly.txt");
-  // Each iteration executes a line from the '.txt' file.
-  for(it = tokens.begin(); it != tokens.end();) {
-    advance(it, parser->parseCommand(it));
-  }
+    // Turn file into tokens.
+    tokens = Lexer::analyzeCode("../fly.txt");
+    // Each iteration executes a line from the '.txt' file.
+    for (it = tokens.begin(); it != tokens.end();) {
+        advance(it, parser->parseCommand(it));
+    }
 
-  return 0;
+    return 0;
 }
 
 /** Initializes the commands map.
@@ -62,11 +62,11 @@ int MainThread::execute(list<string>::iterator) {
  * @param symTable, some commands need to initialize.
  */
 void MainThread::initCommands() {
-  cmdMap->emplace("openDataServer", new OpenServerCommand(symTable, programState));
-  cmdMap->emplace("connectControlClient", new ConnectCommand(symTable, programState));
-  cmdMap->emplace("var", new DefineVarCommand(symTable));
-  cmdMap->emplace("Print", new Print());
-  cmdMap->emplace("Sleep", new Sleep());
-  cmdMap->emplace("while", new LoopCommand(new MainThread(this->symTable)));
-  cmdMap->emplace("if", new IfCommand(new MainThread(this->symTable)));
+    cmdMap->emplace("openDataServer", new OpenServerCommand(symTable, programState));
+    cmdMap->emplace("connectControlClient", new ConnectCommand(symTable, programState));
+    cmdMap->emplace("var", new DefineVarCommand(symTable));
+    cmdMap->emplace("Print", new Print());
+    cmdMap->emplace("Sleep", new Sleep());
+    cmdMap->emplace("while", new LoopCommand(new MainThread(this->symTable)));
+    cmdMap->emplace("if", new IfCommand(new MainThread(this->symTable)));
 }

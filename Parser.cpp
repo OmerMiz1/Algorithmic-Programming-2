@@ -8,10 +8,10 @@ using namespace std;
 /**
  * @param map includes all possible command objects.
  */
-Parser::Parser(unordered_map<string,Command*>*map): cmdMap(map){}
+Parser::Parser(unordered_map<string, Command *> *map) : cmdMap(map) {}
 
 Parser::~Parser() {
-  this->cmdMap->clear();
+    this->cmdMap->clear();
 }
 
 /** Calls the command execution's function.
@@ -21,17 +21,17 @@ Parser::~Parser() {
  * @return How many tokens to jump to get to next command.
  */
 int Parser::parseCommand(list<string>::iterator it) {
-  unordered_map<string,Command*>::iterator currCmd = this->cmdMap->find(*it);
-  
-  // Cmd found in map, just executes
-  if (currCmd != this->cmdMap->end()) {
-    return currCmd->second->execute(it);
+    unordered_map<string, Command *>::iterator currCmd = this->cmdMap->find(*it);
 
-  // Cmd not in map so it is an assignment.
-  } else {
-    return this->cmdMap->find("var")->second->execute(it);
-  }
-  //TODO support FunctionCommands when done.
+    // Cmd found in map, just executes
+    if (currCmd != this->cmdMap->end()) {
+        return currCmd->second->execute(it);
+
+        // Cmd not in map so it is an assignment.
+    } else {
+        return this->cmdMap->find("var")->second->execute(it);
+    }
+    //TODO support FunctionCommands when done.
 }
 
 /**
@@ -40,24 +40,24 @@ int Parser::parseCommand(list<string>::iterator it) {
  * @return Map<VAR_NAME, INDEX_BY_XML>. With that map OpenServerCommand can find
  * the appropriate value for specific variable, read from simulator.
  */
-unordered_map<string,int> Parser::parseXml(const char* path) {
-  smatch match;
-  string str;
-  ifstream file(path);
-  unordered_map<string, int> symTable;
+unordered_map<string, int> Parser::parseXml(const char *path) {
+    smatch match;
+    string str;
+    ifstream file(path);
+    unordered_map<string, int> symTable;
 
-   /* Regex find lines starting with <name> and ending with </name> from xml and
-      keeps w/e is between them.*/
-  regex varPathRx("\\s*<name>(.*)<\\/name>");
+    /* Regex find lines starting with <name> and ending with </name> from xml and
+       keeps w/e is between them.*/
+    regex varPathRx("\\s*<name>(.*)<\\/name>");
 
-  // Iterates each line in XML, index each path accordingly.
-  for(int index=0; getline(file, str); ) {
-    if(regex_search(str, match, varPathRx)){
-      symTable.emplace(match[1],index);
-      index++;
+    // Iterates each line in XML, index each path accordingly.
+    for (int index = 0; getline(file, str);) {
+        if (regex_search(str, match, varPathRx)) {
+            symTable.emplace(match[1], index);
+            index++;
+        }
     }
-  }
-  return symTable;
+    return symTable;
 }
 
 /**
@@ -66,21 +66,21 @@ unordered_map<string,int> Parser::parseXml(const char* path) {
  * {0.0,32.4,33.1,....} and should have 36 or so floats.
  * @return Map<INDEX, VALUE> with updated values from serer.
  */
-unordered_map<int,float> Parser::parseServerOutput(string incoming) {
-  unordered_map<int,float> result;
-  smatch rxMatch;
+unordered_map<int, float> Parser::parseServerOutput(string incoming) {
+    unordered_map<int, float> result;
+    smatch rxMatch;
 
-  // Regex find all floats the brackets.
-  regex floatsRx("(\\w|\\.)+");
-  regex_search(incoming, rxMatch, floatsRx);
-  int index = 0;
+    // Regex find all floats the brackets.
+    regex floatsRx("(\\w|\\.)+");
+    regex_search(incoming, rxMatch, floatsRx);
+    int index = 0;
 
-  // Index each float value.
-  for(string match : rxMatch) {
-    result.emplace(index, stof(match));
-    index++;
-  }
-  return result;
+    // Index each float value.
+    for (string match : rxMatch) {
+        result.emplace(index, stof(match));
+        index++;
+    }
+    return result;
 }
 
 /**
@@ -91,13 +91,13 @@ unordered_map<int,float> Parser::parseServerOutput(string incoming) {
  */
 //TODO should be used in ConditionCommand when parsing scope
 int updateScopeTokens(list<string>::iterator it, list<string> list) {
-  int count = 0;
+    int count = 0;
 
-  // NOTE: no nested scopes.
-  for(count=0; it->compare("}") != 0; ++it, ++count) {
-    list.emplace_back(*it);
-  }
-  return count;
+    // NOTE: no nested scopes.
+    for (count = 0; it->compare("}") != 0; ++it, ++count) {
+        list.emplace_back(*it);
+    }
+    return count;
 }
 
 /*list<pair<string, Command*>> Parser::getCmdList() {

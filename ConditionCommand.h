@@ -20,13 +20,15 @@ using namespace std;
 
 class ConditionCommand : public Command {
 protected:
-    Command* myMain = NULL;
+    Command *myMain = NULL;
     Condition *myCondition = NULL;
     //TODO support global vars
 
 public:
-    explicit ConditionCommand(Command* main);
+    explicit ConditionCommand(Command *main);
+
     int execute(list<string>::iterator) override;
+
     int countScopeTokens(list<string>::iterator it);
 };
 

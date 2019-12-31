@@ -6,12 +6,14 @@
 #define ALGORITHMICPROGRAMMINGPROJECT__PROGRAMSTATE_H_
 
 class ProgramState {
-  bool isRunning = true;
+    bool isRunning = true;
 
- public:
-  bool getState() {return isRunning;}
-  void turnOff() {this->isRunning = false;}
-  void turnOn() {this->isRunning = true;}
+public:
+    bool getState() { return isRunning; }
+
+    void turnOff() { this->isRunning = false; }
+
+    void turnOn() { this->isRunning = true; }
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__PROGRAMSTATE_H_

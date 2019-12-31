@@ -12,10 +12,10 @@
 using namespace std;
 
 class FuncCommand : public Command {
- private:
+private:
 
- public:
-  int execute(list<string>::iterator) override;
+public:
+    int execute(list<string>::iterator) override;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__FUNCCOMMAND_H_

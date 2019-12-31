@@ -19,6 +19,7 @@ public:
      * @return a list of strings that describes the file by tokens
      */
     static list<string> analyzeCode(const char *file);
+
     /**
      * Analyzes a line and returns a list of string accordingly
      * @param str the line that needs to be analyzed
@@ -33,7 +34,7 @@ private:
      * @param str the string we are searching the prefix in
      * @return true if the first is a prefix of the secont, false otherwise
      */
-    static bool startsWith(const char * prefix, string str);
+    static bool startsWith(const char *prefix, string str);
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__LEXER_H_

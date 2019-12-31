@@ -14,9 +14,10 @@
 #include "Var.h"
 
 class LoopCommand : public ConditionCommand {
- public:
-  explicit LoopCommand(Command*);
-  int execute(list<string>::iterator) override;
+public:
+    explicit LoopCommand(Command *);
+
+    int execute(list<string>::iterator) override;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__LOOPCOMMAND_H_

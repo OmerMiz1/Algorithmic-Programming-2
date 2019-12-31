@@ -19,18 +19,20 @@
 #include "ProgramState.h"
 
 using namespace std;
+
 class OpenServerCommand : public Command {
- private:
-  int client_sock = 0;
-  thread myThread;
-  SymbolTable *symTable;
-  ProgramState* programState;
+private:
+    int client_sock = 0;
+    thread myThread;
+    SymbolTable *symTable;
+    ProgramState *programState;
 
-  void startListening();
+    void startListening();
 
- public:
-  OpenServerCommand(SymbolTable*, ProgramState*);
-  int execute(list<string>::iterator) override;
+public:
+    OpenServerCommand(SymbolTable *, ProgramState *);
+
+    int execute(list<string>::iterator) override;
 
 };
 

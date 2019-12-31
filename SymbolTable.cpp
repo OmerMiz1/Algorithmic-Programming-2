@@ -53,12 +53,11 @@ bool SymbolTable::recursiveContains(string name) {
 }
 
 map<string, string> SymbolTable::getIngoing() {
-    lock_guard<mutex> lock(this->mtx);
     return this->ingoing;
 }
 
 map<string, float> SymbolTable::getOutgoing() {
-    lock_guard<mutex> lock(this->mtx);
+    lock_guard<mutex> stoplock(this->mtx);
     map<string, float> temp;
     auto it = this->outgoing.begin();
     while (it != this->outgoing.end()) {

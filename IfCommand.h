@@ -7,10 +7,11 @@
 
 #include "ConditionCommand.h"
 
-class IfCommand : public ConditionCommand  {
- public:
-  IfCommand(Command*);
-  int execute(list<string>::iterator) override;
+class IfCommand : public ConditionCommand {
+public:
+    IfCommand(Command *);
+
+    int execute(list<string>::iterator) override;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__IFCOMMAND_H_

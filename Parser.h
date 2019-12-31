@@ -19,16 +19,19 @@
 using namespace std;
 
 class Parser {
- private:
-  unordered_map<string,Command*> *cmdMap;
+private:
+    unordered_map<string, Command *> *cmdMap;
 
- public:
-  explicit Parser(unordered_map<string,Command*> *);
-  ~Parser();
+public:
+    explicit Parser(unordered_map<string, Command *> *);
 
-  int parseCommand(list<string>::iterator);
-  static unordered_map<string,int> parseXml(const char*);
-  static unordered_map<int, float> parseServerOutput(string incoming);
+    ~Parser();
+
+    int parseCommand(list<string>::iterator);
+
+    static unordered_map<string, int> parseXml(const char *);
+
+    static unordered_map<int, float> parseServerOutput(string incoming);
 
 };
 

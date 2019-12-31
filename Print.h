@@ -9,21 +9,22 @@
 #include <utility>
 #include <iostream>
 #include "Command.h"
+
 using namespace std;
 
 class Print : public Command {
- public:
+public:
 
-  /** Prints a message (at it+1)
-   *
-   * @param it pointer to "Print" token.
-   * @return how many tokens to jump.
-   */
-  int execute(list<string>::iterator it) override {
-    ++it;
-    cout<<*it<<endl;
-    return 2;
-  }
+    /** Prints a message (at it+1)
+     *
+     * @param it pointer to "Print" token.
+     * @return how many tokens to jump.
+     */
+    int execute(list<string>::iterator it) override {
+        ++it;
+        cout << *it << endl;
+        return 2;
+    }
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__PRINT_H_

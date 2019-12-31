@@ -6,7 +6,6 @@
 #define ALGORITHMICPROGRAMMINGPROJECT_CONDITION_H
 
 
-
 #include <regex>
 #include <string>
 #include "Expression.h"
@@ -19,7 +18,9 @@ class Condition {
     Interpreter *interpreter;
 public:
     explicit Condition(string str);
+
     void setVariables(string str);
+
     bool getState() const;
 };
 

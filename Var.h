@@ -8,20 +8,24 @@
 #include <string>
 #include <utility>
 #include <mutex>
+
 using namespace std;
 
 class Var {
- private:
-  string name, direction;
-  float value;
+private:
+    string name, direction;
+    float value;
 
-  //TODO add string that indicates the var location in sim
+    //TODO add string that indicates the var location in sim
 
- public:
-  Var(string varName, float varValue) : name(move(varName)), value(varValue) {}
-  string getName() {return this->name;}
-  float getValue() {return this->value;}
-  void setValue(float newValue) {this->value = newValue;}
+public:
+    Var(string varName, float varValue) : name(move(varName)), value(varValue) {}
+
+    string getName() { return this->name; }
+
+    float getValue() { return this->value; }
+
+    void setValue(float newValue) { this->value = newValue; }
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__VAR_H_

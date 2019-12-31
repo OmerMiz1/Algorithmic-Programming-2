@@ -17,7 +17,7 @@ list<string> Lexer::analyzeCode(const char *file) {
     string str;
     ifstream fileStream(file);
     while (getline(fileStream, str)) {
-      
+
         list<string> temp = analyzeLine(str);
         for (auto it : temp) {
             tokens.emplace_back(it);
@@ -34,8 +34,7 @@ bool Lexer::startsWith(const char *prefix, string str) {
     std::string temp1(prefix);
     std::string temp2(str);
     auto res = std::mismatch(temp1.begin(), temp1.end(), temp2.begin());
-    if (res.first == temp1.end())
-    {
+    if (res.first == temp1.end()) {
         return true;
     }
     return false;

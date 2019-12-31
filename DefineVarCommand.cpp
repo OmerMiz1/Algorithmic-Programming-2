@@ -16,7 +16,7 @@ DefineVarCommand::DefineVarCommand(SymbolTable *symbolTable) : symbolTable(symbo
 int DefineVarCommand::execute(list<string>::iterator it) {
 
     Command *cmd;
-    if (it->compare("var") == 0){
+    if (it->compare("var") == 0) {
         ++it; // "var" advance to "<var_name>"
         //TODO check if exist
     }

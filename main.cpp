@@ -4,9 +4,9 @@
 int main() {
     MainThread *main = new MainThread();
     try {
-      main->execute();
-    } catch(const char* e) {
-      cout<<e<<endl;
+        main->execute();
+    } catch (const char *e) {
+        cout << e << endl;
     }
 
 
