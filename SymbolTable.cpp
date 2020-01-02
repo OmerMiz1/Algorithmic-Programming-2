@@ -3,6 +3,7 @@
 //
 
 #include "SymbolTable.h"
+#include "Expression.h"
 
 SymbolTable::SymbolTable() {
     this->father = nullptr;
@@ -13,7 +14,10 @@ SymbolTable::SymbolTable(SymbolTable *father) : father(father) {}
 float SymbolTable::getVariable(string name) {
 
     if (!this->recursiveContains(name)) {
-        throw "Asked for non existing variable " + name;
+        Interpreter interpreter;
+        interpreter.setVariables(this->updatedMap());
+        Expression *expression = interpreter.interpret(name);
+        return expression->calculate();
     } else if (this->contains(name)) {
         return localVariables[name];
     } else if (this->father != nullptr) {

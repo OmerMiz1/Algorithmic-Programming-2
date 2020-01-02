@@ -9,11 +9,16 @@
 #include <utility>
 #include <iostream>
 #include "Command.h"
+#include "SymbolTable.h"
 
 using namespace std;
 
 class Print : public Command {
+
+    SymbolTable *symbolTable;
+
 public:
+    Print(SymbolTable *symbolTable) : symbolTable(symbolTable) {}
 
     /** Prints a message (at it+1)
      *
@@ -22,7 +27,13 @@ public:
      */
     int execute(list<string>::iterator it) override {
         ++it;
-        cout << *it << endl;
+        if (it->front() == '"' && it->back() == '"') {
+            it->pop_back();
+            it->erase(0,1);
+            cout << *it << endl;
+        } else {
+            cout << this->symbolTable->getVariable(*it) << endl;
+        }
         return 2;
     }
 };
