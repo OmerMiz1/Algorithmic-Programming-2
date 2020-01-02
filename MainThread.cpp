@@ -65,7 +65,7 @@ void MainThread::initCommands() {
     cmdMap->emplace("openDataServer", new OpenServerCommand(symTable, programState));
     cmdMap->emplace("connectControlClient", new ConnectCommand(symTable, programState));
     cmdMap->emplace("var", new DefineVarCommand(symTable));
-    cmdMap->emplace("Print", new Print());
+    cmdMap->emplace("Print", new Print(symTable));
     cmdMap->emplace("Sleep", new Sleep());
     cmdMap->emplace("while", new LoopCommand(new MainThread(this->symTable)));
     cmdMap->emplace("if", new IfCommand(new MainThread(this->symTable)));
