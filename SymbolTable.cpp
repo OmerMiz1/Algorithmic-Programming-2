@@ -2,6 +2,7 @@
 // Created by Dor Refaeli on 28/12/2019.
 //
 
+#include <thread>
 #include "SymbolTable.h"
 #include "Expression.h"
 
@@ -13,6 +14,10 @@ SymbolTable::SymbolTable(SymbolTable *father) : father(father) {}
 
 float SymbolTable::getVariable(string name) {
 
+    while (this->remoteVariables.count(name) && !this->recursiveContains(name))
+    {
+        this_thread::sleep_for(100ms);
+    }
     if (!this->recursiveContains(name)) {
         Interpreter interpreter;
         interpreter.setVariables(this->updatedMap());
