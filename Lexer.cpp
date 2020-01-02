@@ -23,6 +23,7 @@ list<string> Lexer::analyzeCode(const char *file) {
             tokens.emplace_back(it);
         }
     }
+    fileStream.close();
     return tokens;
 }
 

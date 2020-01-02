@@ -79,7 +79,7 @@ void ConnectCommand::startSending() {
                 }
                 char buffer[1024] = {0};
                 read(clientSocket, buffer, 1024);
-                clog << buffer << endl;
+//                clog << buffer << endl;
                 it++;
             }
         }
