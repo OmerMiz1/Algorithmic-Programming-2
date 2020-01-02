@@ -43,7 +43,6 @@ public:
     // return.
     int execute(list<string>::iterator) override;
     int execute();
-    SymbolTable *getSymbolTable();
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__MAINTHREAD_H_

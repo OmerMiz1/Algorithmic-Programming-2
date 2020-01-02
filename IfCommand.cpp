@@ -4,7 +4,7 @@
 
 #include "IfCommand.h"
 
-IfCommand::IfCommand(Command *main) : ConditionCommand(main) {}
+IfCommand::IfCommand(Command *main, SymbolTable *table) : ConditionCommand(main, table) {}
 
 int IfCommand::execute(list<string>::iterator it) {
     int numOfTokens = ConditionCommand::execute(it);

@@ -67,10 +67,6 @@ void MainThread::initCommands() {
     cmdMap->emplace("var", new DefineVarCommand(symTable));
     cmdMap->emplace("Print", new Print(symTable));
     cmdMap->emplace("Sleep", new Sleep());
-    cmdMap->emplace("while", new LoopCommand(new MainThread(this->symTable)));
-    cmdMap->emplace("if", new IfCommand(new MainThread(this->symTable)));
-}
-
-SymbolTable* MainThread::getSymbolTable() {
-    return this->symTable;
+    cmdMap->emplace("while", new LoopCommand(new MainThread(symTable), symTable));
+    cmdMap->emplace("if", new IfCommand(new MainThread(symTable), symTable));
 }
