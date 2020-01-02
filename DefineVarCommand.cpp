@@ -3,6 +3,7 @@
 //
 
 #include <utility>
+#include <iostream>
 #include "DefineVarCommand.h"
 #include "Expression.h"
 
@@ -34,9 +35,14 @@ int DefineVarCommand::execute(list<string>::iterator it) {
         this->symbolTable->setRemoteVariable(name, direction, value);
     } else if (direction.compare("=") == 0) {
         Interpreter *interpreter = new Interpreter();
+        //TODO remove before submit
+//        cout<<interpreter->varsCount()<<'\n'<<endl;
         interpreter->setVariables(this->symbolTable->updatedMap());
+//        cout<<interpreter->varsCount()<<'\n'<<endl;
         Expression *expression = interpreter->interpret(value);
+//        cout<<expression->calculate()<<'\n'<<endl;
         this->symbolTable->setVariable(name, expression->calculate());
+//        cout<<symbolTable->getVariable(name)<<endl;
     } else {
         //TODO this line is only for debugging, remove before done
         throw "ERROR in add defineVarCommand with:" + name + " " + direction + " " + value;

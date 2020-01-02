@@ -321,7 +321,9 @@ void Interpreter::setVariable(string name, double num) {
 
 void Interpreter::setVariables(map<string, float> varMap) {
     map<string, float>::iterator it = varMap.begin();
+
     while (it != varMap.end()) {
         this->setVariable(it->first, it->second);
+        it++;
     }
 }

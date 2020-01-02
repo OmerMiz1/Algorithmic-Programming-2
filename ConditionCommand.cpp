@@ -3,6 +3,7 @@
 //
 
 #include "ConditionCommand.h"
+#include "MainThread.h"
 
 ConditionCommand::ConditionCommand(Command *main) : myMain(main) {}
 
@@ -11,7 +12,7 @@ int ConditionCommand::execute(list<string>::iterator it) {
 
     // 1st token is the "condtion type" and 2nd is the condition itself (string).
     ++it;
-    this->myCondition = new Condition(*it);
+    this->myCondition = new Condition(dynamic_cast<MainThread*>(myMain)->getSymbolTable(), *it);
     return count;
 }
 

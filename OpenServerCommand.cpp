@@ -104,15 +104,15 @@ void OpenServerCommand::startListening() {
             int firstEol = bufStr1.find_first_of('\n');
 
             if(firstEol != string::npos) {
-                auto it = bufStr1.begin();
+                it = bufStr1.begin();
                 advance(it, firstEol);
                 bufStr2.append(it, bufStr1.end());
                 break;
             }
-        } while (true);
+        } while (programState->getState());
 
 
-//        cout <<bufStr1.length() << "\n" << endl; //TODO clear before submitting
+        //cout <<bufStr1.length() << "\n" << endl; //TODO clear before submitting
         unordered_map<int, float> newVals = Parser::parseServerOutput(bufStr1);
 
         // Swap buffers and clear the 2nd.

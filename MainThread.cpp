@@ -70,3 +70,7 @@ void MainThread::initCommands() {
     cmdMap->emplace("while", new LoopCommand(new MainThread(this->symTable)));
     cmdMap->emplace("if", new IfCommand(new MainThread(this->symTable)));
 }
+
+SymbolTable* MainThread::getSymbolTable() {
+    return this->symTable;
+}

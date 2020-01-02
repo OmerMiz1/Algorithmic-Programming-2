@@ -23,10 +23,10 @@ using namespace std;
 class ConnectCommand : public Command {
 private:
     int clientSocket;
+    int isConnect = 0;
     SymbolTable *symbolTable;
     ProgramState *programState;
     list<const char *> cmdQueue;
-    int isConnect = 0;
 
 public:
     ConnectCommand(SymbolTable *, ProgramState *);
