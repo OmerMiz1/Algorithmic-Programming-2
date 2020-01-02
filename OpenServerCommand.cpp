@@ -102,30 +102,18 @@ void OpenServerCommand::startListening() {
                 throw "Error reading from simulator.";
             }
 
-            parseSimInput(buffer, currSample);
+            // Parse data from simulator into data.
             string temp(buffer);
+            parseSimInput(buffer, currSample);
             int firstEol = temp.find_first_of('\n');
             if(firstEol != 0) {
                 parseSimInput(buffer+firstEol, nextSample);
-            }
-/*
-            if(firstEol != 0) {
-                it = bufStr1.begin();
-                advance(it, firstEol);
-                bufStr2.append(it, bufStr1.end());
                 break;
-            }*/
+            }
         } while (programState->getState());
-
 
 //        this_thread::sleep_for(1500ms);
 //        cout <<bufStr1 << "\n" << endl; //TODO clear before submitting
-//        unordered_map<int, float> *newVals = Parser::parseServerOutput(bufStr1);
-
-        // Swap buffers and clear the 2nd.
-        /*bufStr1.clear();
-        bufStr1 = bufStr2;
-        bufStr2.clear();*/
 
         // If nullptr returned - recieved corrupt data
         if (!currSample->empty()) {
@@ -152,27 +140,33 @@ void OpenServerCommand::startListening() {
     close(this->sockfd);
 }
 
+/**
+ *
+ * @param OpenServerCommand sends the incoming string. String looks like:
+ * {0.0,32.4,33.1,....} and should have 36 or so floats.
+ * @return Map<INDEX, VALUE> with updated values from serer.
+ */
 void OpenServerCommand::parseSimInput(char buffer[MAX_CHARS], unordered_map<int,float>* map) {
-    smatch rxMatch;
-    string incoming(buffer);
-
-    // Regex find all floats the brackets.
-    regex floatsRx("(\\d+\\.\\d+|(\\\n))");
-    regex_search(incoming, rxMatch, floatsRx);
+    string incoming(buffer), temp;
     int index = 0;
 
-    // Index each float value.
-    for (string match : rxMatch) {
-        if(match.compare("\n") == 0){
+    // Check if all chars are valid.
+    if(incoming.find_first_not_of("0123456789.,") != string::npos) {
+        return;
+    }
+
+    for(char c : incoming) {
+        if(c == '\n') {
+            map->emplace(index,stof(temp));
             return;
-        // If a value is corrupt (includes non decimal chars) return error value
-        }/*else if(match.find_first_not_of("0123456789.") != string::npos) {
-            map->clear();
-            return;
-        }*/
-        //TODO findout why buffer is too large
-        map->emplace(index, stof(match));
-        index++;
+        } else if(c == ',') {
+            map->emplace(index,stof(temp));
+            index++;
+            temp.clear();
+            continue;
+        } else {
+            temp+=c;
+        }
     }
 }
 

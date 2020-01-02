@@ -190,7 +190,7 @@ Expression *Interpreter::interpret(string str) {
         } else if (token == ")") {
             while (operators.top() != "(") {
                 if (operators.empty()) {
-                    throw ("illegal math expression");
+                    throw ("illegal math expression1");
                 }
                 postfix.push(new string(operators.top()));
                 operators.pop();
@@ -251,7 +251,7 @@ Expression *Interpreter::build(queue<string *> postfix) {
                     }
                     postfix.pop();
                 }
-                throw ("illegal math expression");
+                throw ("illegal math expression2");
             } else {
                 Expression *right = expressions.top();
                 expressions.pop();
@@ -277,7 +277,7 @@ Expression *Interpreter::build(queue<string *> postfix) {
                     }
                     postfix.pop();
                 }
-                throw ("illegal math expression");
+                throw ("illegal math expression3");
             } else {
                 Expression *tempExpression = expressions.top();
                 expressions.pop();
@@ -302,7 +302,7 @@ Expression *Interpreter::build(queue<string *> postfix) {
                     }
                     postfix.pop();
                 }
-                throw ("illegal math expression");
+                throw ("illegal math expression4");
             }
         }
     }

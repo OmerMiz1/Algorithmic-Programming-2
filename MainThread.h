@@ -39,9 +39,6 @@ public:
     explicit MainThread(SymbolTable*, MainThread*);
     ~MainThread();
 
-    //TODO link running programState for OpenServerCommand, ConnectCommand, MainThread
-    // if 1 of them gets an error and stops, the rest will release all memory and
-    // return.
     int execute(list<string>::iterator) override;
     int execute();
 };

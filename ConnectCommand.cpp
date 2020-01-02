@@ -96,8 +96,6 @@ void ConnectCommand::startSending() {
         }
     }
     close(clientSocket);
-
-    //TODO clear memory? asking cause its static func.
 }
 
 void ConnectCommand::addToCmdQueue(const char *temp) {

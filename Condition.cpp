@@ -19,14 +19,6 @@ Condition::Condition(SymbolTable *symbolTable1, string str) {
 }
 
 void Condition::setVariables(string str) {
-    //  TODO not clear if interpreter knows about the variables in the map or
-    //    just instantiating variables by their names. example below.
-    /* if i send interpreter h0 == heading, how will he know the values of h0 and heading?
-     * Idea for solution, first get the variables by REFERENCE (explain after)
-     * and make a dedicated function in interpreter to support adding variables
-     * by reference. why? because this way if the var is being updated DURING a while loop for example,
-     * our condition will always be updated without being in charge of getting those updates.
-    */
     this->interpreter->setVariables(str);
 }
 

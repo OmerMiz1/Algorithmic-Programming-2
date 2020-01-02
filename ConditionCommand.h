@@ -23,7 +23,6 @@ protected:
     Command *myMain = nullptr;
     SymbolTable *symTable = nullptr;
     Condition *myCondition = nullptr;
-    //TODO support global vars
 
 public:
     explicit ConditionCommand(Command*, SymbolTable*);

@@ -147,15 +147,6 @@ public:
 
     Expression *interpret(string);
 
-    //TODO for debugging
-    int varsCount() {
-        int count = 0;
-        for(auto it : variables) {
-            count++;
-        }
-        return count;
-    }
-
 private:
 
     /**
