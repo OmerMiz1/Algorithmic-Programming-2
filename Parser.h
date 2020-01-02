@@ -31,7 +31,7 @@ public:
 
     static unordered_map<string, int> parseXml(const char *);
 
-    static unordered_map<int, float> parseServerOutput(string incoming);
+    static unordered_map<int, float>* parseServerOutput(string incoming);
 
 };
 

@@ -35,7 +35,7 @@ int ConnectCommand::execute(list<string>::iterator it) {
     address.sin_addr.s_addr = inet_addr(ip);
     address.sin_port = htons(port);
 
-    while (!(this->isConnect = connect(clientSocket, (struct sockaddr *) &address, sizeof(address)))) {
+    while (this->isConnect = connect(clientSocket, (struct sockaddr *) &address, sizeof(address))) {
         if (isConnect == -1) {
             programState->turnOff();
             throw "Failed to connect to client server";
@@ -54,6 +54,7 @@ void ConnectCommand::startSending() {
     chrono::milliseconds duration, timePassed;
     chrono::steady_clock::time_point start, end;
     duration = chrono::milliseconds(100);
+    int isSent;
 
     while (programState->getState()) {
         // Start clock
@@ -69,11 +70,16 @@ void ConnectCommand::startSending() {
                 simLoaction.pop_back();
                 command = "set " + simLoaction + " " + to_string(it->second) + "\r\n";
                 const char *temp = command.c_str();
-                int isSent = send(clientSocket, temp, strlen(temp), 0);
+                if(isConnect == -1) {
+                    throw "Lost connection to simulator";
+                }
+
+                isSent = send(clientSocket, temp, strlen(temp), 0);
                 if (isSent == -1) {
                     programState->turnOff();
                     throw "Failed to send string to host";
                 }
+
                 char buffer[1024] = {0};
                 read(clientSocket, buffer, 1024);
                 clog << buffer << endl;
@@ -92,6 +98,7 @@ void ConnectCommand::startSending() {
         }
     }
 
+    close(clientSocket);
     //TODO clear memory? asking cause its static func.
 }
 

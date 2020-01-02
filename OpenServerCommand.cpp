@@ -18,7 +18,7 @@ OpenServerCommand::OpenServerCommand(SymbolTable *sym, ProgramState *state)
  * @return number of tokens to advance in main loop.
  */
 int OpenServerCommand::execute(list<string>::iterator it) {
-    int sockfd = 0, port = 0;
+    int port = 0;
     sockaddr_in address{};
 
     // Parse port token
@@ -26,7 +26,7 @@ int OpenServerCommand::execute(list<string>::iterator it) {
     port = stoi(*it);
 
     // OPEN SOCKET
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    this->sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         programState->turnOff();
         throw "Could not create a socket.";
@@ -112,21 +112,25 @@ void OpenServerCommand::startListening() {
         } while (programState->getState());
 
 
-        //cout <<bufStr1.length() << "\n" << endl; //TODO clear before submitting
-        unordered_map<int, float> newVals = Parser::parseServerOutput(bufStr1);
+        this_thread::sleep_for(1500ms);
+        cout <<bufStr1 << "\n" << endl; //TODO clear before submitting
+        unordered_map<int, float> *newVals = Parser::parseServerOutput(bufStr1);
 
         // Swap buffers and clear the 2nd.
-        bufStr1.clear();
+        bufStr1.erase(0);
         bufStr1 = bufStr2;
-        bufStr2.clear();
+        bufStr2.erase(0);
 
-        // Update variables declared '<-' in the global SymbolTable.
-        for (auto pair : symTable->getIngoing()) {
-            /* pair.first == "name" , pair.second == "path"
-             * newVals.first == "index", newVals.second == "value"
-             * */
-            int index = pathToIndexMap[pair.second];
-            symTable->setVariable(pair.first, newVals[index]);
+        // If nullptr returned - recieved corrupt data
+        if (newVals != nullptr) {
+            // Otherwise update variables declared '<-' in the global SymbolTable.
+            for (auto pair : symTable->getIngoing()) {
+                /* pair.first == "name" , pair.second == "path"
+                 * newVals.first == "index", newVals.second == "value"
+                 * */
+                int index = pathToIndexMap[pair.second];
+                symTable->setVariable(pair.first, (*newVals)[index]);
+            }
         }
 
         // End clock and then calculate time passed.
@@ -138,5 +142,7 @@ void OpenServerCommand::startListening() {
             this_thread::sleep_for(duration - timePassed);
         }
     }
+
+    close(this->sockfd);
 }
 

@@ -66,8 +66,8 @@ unordered_map<string, int> Parser::parseXml(const char *path) {
  * {0.0,32.4,33.1,....} and should have 36 or so floats.
  * @return Map<INDEX, VALUE> with updated values from serer.
  */
-unordered_map<int, float> Parser::parseServerOutput(string incoming) {
-    unordered_map<int, float> result;
+unordered_map<int, float>* Parser::parseServerOutput(string incoming) {
+    unordered_map<int, float>* result = new unordered_map<int,float>;
     smatch rxMatch;
 
     // Regex find all floats the brackets.
@@ -77,7 +77,11 @@ unordered_map<int, float> Parser::parseServerOutput(string incoming) {
 
     // Index each float value.
     for (string match : rxMatch) {
-        result.emplace(index, stof(match));
+        // If a value is corrupt (includes non decimal chars) return error value
+        if(match.find_first_not_of("0123456789.") != string::npos) {
+            return nullptr;
+        }
+        result->emplace(index, stof(match));
         index++;
     }
     return result;

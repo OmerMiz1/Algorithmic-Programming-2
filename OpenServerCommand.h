@@ -22,8 +22,8 @@ using namespace std;
 
 class OpenServerCommand : public Command {
 private:
-    int client_sock = 0;
-    thread myThread;
+    int client_sock;
+    int sockfd;
     SymbolTable *symTable;
     ProgramState *programState;
 
