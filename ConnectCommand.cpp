@@ -13,7 +13,10 @@ ConnectCommand::ConnectCommand(SymbolTable *symbolTable, ProgramState *state)
 
 int ConnectCommand::execute(list<string>::iterator it) {
     ++it;
-    const char *ip = (*it).c_str();
+    string tempIp = *it;
+    tempIp.erase(0,1);
+    tempIp.pop_back();
+    const char *ip = (tempIp).c_str();
     ++it;
     string portString = *it;
     int port;
@@ -35,11 +38,11 @@ int ConnectCommand::execute(list<string>::iterator it) {
     address.sin_addr.s_addr = inet_addr(ip);
     address.sin_port = htons(port);
 
-    while (this->isConnect = connect(clientSocket, (struct sockaddr *) &address, sizeof(address))) {
-        if (isConnect == -1) {
-            programState->turnOff();
-            throw "Failed to connect to client server";
-        }
+    while ((this->isConnect = connect(clientSocket, (struct sockaddr *) &address, sizeof(address)))) {
+//        if (isConnect == -1) {
+//            programState->turnOff();
+//            throw "Failed to connect to client server";
+//        }
         this_thread::sleep_for(100ms);
     }
 
@@ -54,7 +57,6 @@ void ConnectCommand::startSending() {
     chrono::milliseconds duration, timePassed;
     chrono::steady_clock::time_point start, end;
     duration = chrono::milliseconds(100);
-    int isSent;
 
     while (programState->getState()) {
         // Start clock
@@ -70,16 +72,11 @@ void ConnectCommand::startSending() {
                 simLoaction.pop_back();
                 command = "set " + simLoaction + " " + to_string(it->second) + "\r\n";
                 const char *temp = command.c_str();
-                if(isConnect == -1) {
-                    throw "Lost connection to simulator";
-                }
-
-                isSent = send(clientSocket, temp, strlen(temp), 0);
+                int isSent = send(clientSocket, temp, strlen(temp), 0);
                 if (isSent == -1) {
                     programState->turnOff();
                     throw "Failed to send string to host";
                 }
-
                 char buffer[1024] = {0};
                 read(clientSocket, buffer, 1024);
                 clog << buffer << endl;
@@ -97,8 +94,8 @@ void ConnectCommand::startSending() {
             this_thread::sleep_for(duration - timePassed);
         }
     }
-
     close(clientSocket);
+
     //TODO clear memory? asking cause its static func.
 }
 
