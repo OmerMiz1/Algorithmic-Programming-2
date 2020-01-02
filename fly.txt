@@ -40,7 +40,6 @@ Print("engine is warming...")
 Print(rpm)
 while rpm <= 750 {
 	Print(rpm)
-	Sleep(1000)
 }
 Sleep(5000)
 Print("let's fly")

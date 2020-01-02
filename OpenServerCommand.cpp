@@ -77,7 +77,6 @@ int OpenServerCommand::execute(list<string>::iterator it) {
 void OpenServerCommand::startListening() {
     int valRead;
     char buffer[MAX_CHARS];
-    string bufStr1, bufStr2;
     string::iterator it;
 
     // Initialize clock variables for putting thread to sleep.
@@ -85,11 +84,14 @@ void OpenServerCommand::startListening() {
     chrono::steady_clock::time_point start, end;
     duration = chrono::milliseconds(100);
     unordered_map<string, int> pathToIndexMap = Parser::parseXml("../generic_small.xml");
+    unordered_map<int,float> *currSample = new unordered_map<int,float>;
+    unordered_map<int,float> *nextSample = new unordered_map<int,float>;
 
     // The listening loop, will break only if running will become false.
     while (programState->getState()) {
         // Start clock
         start = chrono::steady_clock::now();
+
         // Read to buffer until the entire message is received (might be cut midway)
         do {
             valRead = read(client_sock, buffer, MAX_CHARS);
@@ -99,37 +101,41 @@ void OpenServerCommand::startListening() {
                 programState->turnOff();
                 throw "Error reading from simulator.";
             }
-            //TODO create func to iterate string until first /n appears.
-            bufStr1.append(buffer);
-            int firstEol = bufStr1.find_first_of('\n');
 
-            if(firstEol != string::npos) {
+            parseSimInput(buffer, currSample);
+            string temp(buffer);
+            int firstEol = temp.find_first_of('\n');
+            if(firstEol != 0) {
+                parseSimInput(buffer+firstEol, nextSample);
+            }
+/*
+            if(firstEol != 0) {
                 it = bufStr1.begin();
                 advance(it, firstEol);
                 bufStr2.append(it, bufStr1.end());
                 break;
-            }
+            }*/
         } while (programState->getState());
 
 
 //        this_thread::sleep_for(1500ms);
 //        cout <<bufStr1 << "\n" << endl; //TODO clear before submitting
-        unordered_map<int, float> *newVals = Parser::parseServerOutput(bufStr1);
+//        unordered_map<int, float> *newVals = Parser::parseServerOutput(bufStr1);
 
         // Swap buffers and clear the 2nd.
-        bufStr1.erase(0);
+        /*bufStr1.clear();
         bufStr1 = bufStr2;
-        bufStr2.erase(0);
+        bufStr2.clear();*/
 
         // If nullptr returned - recieved corrupt data
-        if (newVals != nullptr) {
+        if (!currSample->empty()) {
             // Otherwise update variables declared '<-' in the global SymbolTable.
             for (auto pair : symTable->getIngoing()) {
                 /* pair.first == "name" , pair.second == "path"
                  * newVals.first == "index", newVals.second == "value"
                  * */
                 int index = pathToIndexMap[pair.second];
-                symTable->setVariable(pair.first, (*newVals)[index]);
+                symTable->setVariable(pair.first, (*currSample)[index]);
             }
         }
 
@@ -144,5 +150,29 @@ void OpenServerCommand::startListening() {
     }
 
     close(this->sockfd);
+}
+
+void OpenServerCommand::parseSimInput(char buffer[MAX_CHARS], unordered_map<int,float>* map) {
+    smatch rxMatch;
+    string incoming(buffer);
+
+    // Regex find all floats the brackets.
+    regex floatsRx("(\\d+\\.\\d+|(\\\n))");
+    regex_search(incoming, rxMatch, floatsRx);
+    int index = 0;
+
+    // Index each float value.
+    for (string match : rxMatch) {
+        if(match.compare("\n") == 0){
+            return;
+        // If a value is corrupt (includes non decimal chars) return error value
+        }/*else if(match.find_first_not_of("0123456789.") != string::npos) {
+            map->clear();
+            return;
+        }*/
+        //TODO findout why buffer is too large
+        map->emplace(index, stof(match));
+        index++;
+    }
 }
 

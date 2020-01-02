@@ -57,6 +57,8 @@ unordered_map<string, int> Parser::parseXml(const char *path) {
             index++;
         }
     }
+
+    file.close();
     return symTable;
 }
 
@@ -81,6 +83,7 @@ unordered_map<int, float>* Parser::parseServerOutput(string incoming) {
         if(match.find_first_not_of("0123456789.") != string::npos) {
             return nullptr;
         }
+        //TODO findout why buffer is too large
         result->emplace(index, stof(match));
         index++;
     }

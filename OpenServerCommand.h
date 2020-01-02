@@ -5,6 +5,8 @@
 #ifndef ALGORITHMICPROGRAMMINGPROJECT__OPENSERVERCOMMAND_H_
 #define ALGORITHMICPROGRAMMINGPROJECT__OPENSERVERCOMMAND_H_
 
+#define MAX_CHARS 1024
+
 #include <string>
 #include <chrono>
 #include <iostream>
@@ -33,6 +35,7 @@ public:
     OpenServerCommand(SymbolTable *, ProgramState *);
 
     int execute(list<string>::iterator) override;
+    void parseSimInput(char[MAX_CHARS], unordered_map<int,float>*);
 
 };
 
