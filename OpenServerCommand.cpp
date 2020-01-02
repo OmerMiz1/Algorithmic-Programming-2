@@ -112,7 +112,7 @@ void OpenServerCommand::startListening() {
         } while (true);
 
 
-        cout <<bufStr1.length() << "\n" << endl; //TODO clear before submitting
+//        cout <<bufStr1.length() << "\n" << endl; //TODO clear before submitting
         unordered_map<int, float> newVals = Parser::parseServerOutput(bufStr1);
 
         // Swap buffers and clear the 2nd.

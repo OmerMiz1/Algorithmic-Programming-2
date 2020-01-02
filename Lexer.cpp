@@ -103,6 +103,7 @@ list<string> Lexer::analyzeLine(string str) {
         smatch m;
         regex_search(str, m, re);
         tokens.emplace_back(m[1]);
+        tokens.emplace_back("=");
         tokens.emplace_back(m[2]);
     }
     return tokens;

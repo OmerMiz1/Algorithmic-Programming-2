@@ -75,6 +75,7 @@ map<string, float> SymbolTable::updatedMap() {
     auto it = this->localVariables.begin();
     while (it != this->localVariables.end()) {
         temp[it->first] = it->second;
+        it++;
     }
     return temp;
 }
