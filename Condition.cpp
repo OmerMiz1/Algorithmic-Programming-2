@@ -7,7 +7,8 @@
 
 using namespace std;
 
-Condition::Condition(string str) {
+Condition::Condition(SymbolTable *symbolTable1, string str) {
+    this->symbolTable = symbolTable1;
     regex re("\\s*(.*) (=|<|>|<=|>=|!=) (.*)");
     smatch m;
     regex_search(str, m, re);
@@ -31,20 +32,20 @@ void Condition::setVariables(string str) {
 
 bool Condition::getState() const {
     //TODO update interpreter variables
-    Expression *tempLeft = this->interpreter->interpret(this->left);
-    Expression *tempRight = this->interpreter->interpret(this->right);
+    float left = this->symbolTable->getVariable(this->left);
+    float right = this->symbolTable->getVariable(this->right);
     if (this->sign == "=") {
-        return tempLeft->calculate() == tempRight->calculate();
+        return left == right;
     } else if (this->sign == "<") {
-        return tempLeft->calculate() < tempRight->calculate();
+        return left < right;
     } else if (this->sign == ">") {
-        return tempLeft->calculate() > tempRight->calculate();
+        return left > right;
     } else if (this->sign == "<=") {
-        return tempLeft->calculate() <= tempRight->calculate();
+        return left <= right;
     } else if (this->sign == ">=") {
-        return tempLeft->calculate() >= tempRight->calculate();
+        return left >= right;
     } else if (this->sign == "!=") {
-        return tempLeft->calculate() != tempRight->calculate();
+        return left != right;
     } else {
         throw "Error processing a condition";
     }

@@ -10,14 +10,16 @@
 #include <string>
 #include "Expression.h"
 #include "Command.h"
+#include "SymbolTable.h"
 
 class Condition {
     string left;
     string sign;
     string right;
     Interpreter *interpreter;
+    SymbolTable *symbolTable;
 public:
-    explicit Condition(string str);
+    explicit Condition(SymbolTable *, string);
 
     void setVariables(string str);
 
