@@ -63,7 +63,11 @@ void ConnectCommand::startSending() {
             auto it = outgoing.begin();
             while (it != outgoing.end()) {
                 string command;
-                command = "set " + it->first + " " + to_string(it->second) + "\r\n";
+                string simLoaction = it->first;
+                simLoaction.erase(0,5);
+                simLoaction.pop_back();
+                simLoaction.pop_back();
+                command = "set " + simLoaction + " " + to_string(it->second) + "\r\n";
                 const char *temp = command.c_str();
                 int isSent = send(clientSocket, temp, strlen(temp), 0);
                 if (isSent == -1) {
@@ -74,6 +78,8 @@ void ConnectCommand::startSending() {
                 read(clientSocket, buffer, 1024);
                 clog << buffer << endl;
             }
+        } else {
+            outgoing = symbolTable->getOutgoing();
         }
 
         // End clock and then calculate time passed.

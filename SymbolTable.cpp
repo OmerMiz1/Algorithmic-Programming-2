@@ -66,6 +66,7 @@ map<string, float> SymbolTable::getOutgoing() {
     auto it = this->outgoing.begin();
     while (it != this->outgoing.end()) {
         temp[it->first] = it->second;
+        it++;
     }
     return temp;
 }
