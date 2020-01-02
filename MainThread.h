@@ -28,6 +28,7 @@ class MainThread : Command {
 private:
     Parser *parser;
     SymbolTable *symTable;
+    MainThread *father = nullptr;
     unordered_map<string, Command *> *cmdMap = new unordered_map<string, Command *>;
     ProgramState *programState = new ProgramState();
 
@@ -35,7 +36,7 @@ private:
 
 public:
     MainThread();
-    explicit MainThread(SymbolTable *);
+    explicit MainThread(SymbolTable*, MainThread*);
     ~MainThread();
 
     //TODO link running programState for OpenServerCommand, ConnectCommand, MainThread

@@ -13,7 +13,7 @@ MainThread::MainThread() {
  *
  * @param table
  */
-MainThread::MainThread(SymbolTable *table) {
+MainThread::MainThread(SymbolTable *table, MainThread *outer): father(outer) {
     this->symTable = new SymbolTable(table);
 }
 
@@ -29,8 +29,8 @@ MainThread::~MainThread() {
  * @return
  */
 int MainThread::execute() {
-    list<string>::iterator it;
-    return execute(it);
+    list<string>::iterator dummy;
+    return execute(dummy);
 }
 
 /** Parses each line in the text file and executes using the parser.
@@ -38,19 +38,28 @@ int MainThread::execute() {
  *
  * @return 0 if no errors.
  */
-int MainThread::execute(list<string>::iterator) {
+int MainThread::execute(list<string>::iterator it) {
     list<string> tokens;
-    list<string>::iterator it;
 
     // Init commands map and give it to new Parser object.
     initCommands();
     this->parser = new Parser(cmdMap);
 
-    // Turn file into tokens.
-    tokens = Lexer::analyzeCode("../fly.txt");
-    // Each iteration executes a line from the '.txt' file.
-    for (it = tokens.begin(); it != tokens.end();) {
-        advance(it, parser->parseCommand(it));
+    // FIRST MAIN TOKEN ITERATION
+    if (this->father == nullptr) {
+        // Turn file into tokens.
+        tokens = Lexer::analyzeCode("../fly.txt");
+
+        // Each iteration executes a line from the '.txt' file.
+        for (it = tokens.begin(); it != tokens.end();) {
+            advance(it, parser->parseCommand(it));
+        }
+
+    // SUB MAIN TOKEN ITERATION
+    } else {
+        while(it->compare("}") != 0) {
+            advance(it, parser->parseCommand(it));
+        }
     }
 
     return 0;
@@ -67,6 +76,6 @@ void MainThread::initCommands() {
     cmdMap->emplace("var", new DefineVarCommand(symTable));
     cmdMap->emplace("Print", new Print(symTable));
     cmdMap->emplace("Sleep", new Sleep());
-    cmdMap->emplace("while", new LoopCommand(new MainThread(symTable), symTable));
-    cmdMap->emplace("if", new IfCommand(new MainThread(symTable), symTable));
+    cmdMap->emplace("while", new LoopCommand(new MainThread(symTable, this), symTable));
+    cmdMap->emplace("if", new IfCommand(new MainThread(symTable,this), symTable));
 }
