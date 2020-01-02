@@ -71,7 +71,7 @@ unordered_map<int, float>* Parser::parseServerOutput(string incoming) {
     smatch rxMatch;
 
     // Regex find all floats the brackets.
-    regex floatsRx("(\\w|\\.)+");
+    regex floatsRx("(\\d+\\.\\d+)");
     regex_search(incoming, rxMatch, floatsRx);
     int index = 0;
 

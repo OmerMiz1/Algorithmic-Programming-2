@@ -80,10 +80,11 @@ void ConnectCommand::startSending() {
                 char buffer[1024] = {0};
                 read(clientSocket, buffer, 1024);
                 clog << buffer << endl;
+                it++;
             }
-        } else {
-            outgoing = symbolTable->getOutgoing();
         }
+        outgoing = symbolTable->getOutgoing();
+        symbolTable->clearOutgoing();
 
         // End clock and then calculate time passed.
         end = chrono::steady_clock::now();
