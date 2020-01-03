@@ -3,6 +3,7 @@
 //
 
 #include <thread>
+#include <iostream>
 #include "SymbolTable.h"
 #include "Expression.h"
 
@@ -13,12 +14,16 @@ SymbolTable::SymbolTable() {
 SymbolTable::SymbolTable(SymbolTable *father) : father(father) {}
 
 float SymbolTable::getVariable(string name) {
-
-    while (this->remoteVariables.count(name) && !this->recursiveContains(name))
+    //while asked for a variable that's updated by the server and wasn't updated yet, wain 0.1 seconds
+    while (this->getIngoing().count(name) && !this->recursiveContains(name))
     {
+        //TODO remove the printing line before submitting, for debugging only
+        std::cout << "asked for a variable that the server havn't added yet \"" + name + "\"" << std::endl;
         this_thread::sleep_for(100ms);
     }
+    //if the variable isn't known to the symbol table (or his fathers)
     if (!this->recursiveContains(name)) {
+        //it's an expression, evaluate him and return his value
         Interpreter interpreter;
         interpreter.setVariables(this->updatedMap());
         Expression *expression = interpreter.interpret(name);
@@ -37,12 +42,17 @@ void SymbolTable::setVariable(string name, float num) {
         this->father->setVariable(name, num);
     } else {
         this->localVariables[name] = num;
-        this->addToOutgoing(name, num);
+        this->addToOutgoingIfNeeded(name, num);
     }
 }
 
 void SymbolTable::setRemoteVariable(string name, string direction, string simLocation) {
-
+    //removes the - sim(" - from the start of the location string
+    simLocation.erase(0,5);
+    //removes the - ) - from the start of the location string
+    simLocation.pop_back();
+    //removes the - " - from the start of the location string
+    simLocation.pop_back();
     this->remoteVariables[name] = make_pair(direction, simLocation);
     if (direction == "<-") {
         addToIngoing(name, simLocation);
@@ -73,6 +83,7 @@ map<string, float> SymbolTable::getOutgoing() {
         temp[it->first] = it->second;
         it++;
     }
+    this->clearOutgoing();
     return temp;
 }
 
@@ -95,7 +106,7 @@ void SymbolTable::addToIngoing(string name, string simLocation) {
     this->ingoing[name] = simLocation;
 }
 
-void SymbolTable::addToOutgoing(string name, float num) {
+void SymbolTable::addToOutgoingIfNeeded(string name, float num) {
 
     if (this->father == nullptr) {
         if (this->remoteVariables.count(name)) {
@@ -104,7 +115,7 @@ void SymbolTable::addToOutgoing(string name, float num) {
             }
         }
     } else {
-        this->father->addToOutgoing(name, num);
+        this->father->addToOutgoingIfNeeded(name, num);
     }
 }
 

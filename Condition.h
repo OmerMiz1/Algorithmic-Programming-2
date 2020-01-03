@@ -19,10 +19,17 @@ class Condition {
     Interpreter *interpreter;
     SymbolTable *symbolTable;
 public:
-    explicit Condition(SymbolTable *, string);
+    /**
+     * Construct a new condition
+     * @param symTable the symbol table that the condition is checked according to
+     * @param str a string that describes the condition
+     */
+    explicit Condition(SymbolTable * symTable, string str);
 
-    void setVariables(string str);
-
+    /**
+     * Returns the state of the condition
+     * @return true if the condition is true, false otherwise
+     */
     bool getState() const;
 };
 

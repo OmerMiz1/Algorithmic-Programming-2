@@ -29,17 +29,21 @@ private:
     list<const char *> cmdQueue;
 
 public:
-    ConnectCommand(SymbolTable *, ProgramState *);
+    /**
+     * Construct a new ConnectCommand according to a SymbolTable and a ProgramState
+     * @param symTable the symbol table for the command to use
+     * @param programState the program state that the command uses
+     */
+    ConnectCommand(SymbolTable *symTable, ProgramState *programState);
 
-    int execute(list<string>::iterator) override;
+    int execute(list<string>::iterator it) override;
 
-    void addToCmdQueue(const char *);
-
+    /**
+     * Opens a connection with the simulator and sends him data continuely, should be executed as a thread.
+     */
     void startSending();
 
     void setState(ProgramState *);
-
-    void addToCmdQueue(string); // TODO to remove?
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__CONNECTCOMMAND_H_

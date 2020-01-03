@@ -7,7 +7,7 @@
 #include "DefineVarCommand.h"
 #include "Expression.h"
 
-DefineVarCommand::DefineVarCommand(SymbolTable *symbolTable) : symbolTable(symbolTable) {}
+DefineVarCommand::DefineVarCommand(SymbolTable *symTable) : symbolTable(symTable) {}
 
 /*
  * Execution has 2 options:
@@ -36,16 +36,12 @@ int DefineVarCommand::execute(list<string>::iterator it) {
     } else if (direction.compare("=") == 0) {
         Interpreter *interpreter = new Interpreter();
         //TODO remove before submit
-//        cout<<interpreter->varsCount()<<'\n'<<endl;
         interpreter->setVariables(this->symbolTable->updatedMap());
-//        cout<<interpreter->varsCount()<<'\n'<<endl;
         Expression *expression = interpreter->interpret(value);
-//        cout<<expression->calculate()<<'\n'<<endl;
         this->symbolTable->setVariable(name, expression->calculate());
-//        cout<<symbolTable->getVariable(name)<<endl;
     } else {
         //TODO this line is only for debugging, remove before done
         throw "ERROR in add defineVarCommand with:" + name + " " + direction + " " + value;
     }
-    return skip; // next command token is 4 tokens ahead.
+    return skip; //returns the amount to be skipped after this command, 4 - if starts with "var", 3 - if not
 }

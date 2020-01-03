@@ -4,10 +4,8 @@
 
 #include "Lexer.h"
 #include <fstream>
-#include <iostream>
 #include <regex>
 #include <list>
-#include <algorithm>
 
 
 using namespace std;
@@ -54,7 +52,6 @@ list<string> Lexer::analyzeLine(string str) {
         smatch m;
         regex_search(str, m, re);
         tokens.emplace_back("connectControlClient");
-        //TODO ip is parsed as \"127.0.0.1\"
         tokens.emplace_back(m[1]);
         tokens.emplace_back(m[2]);
     } else if (startsWith("var", str)) {
