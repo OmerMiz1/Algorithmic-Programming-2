@@ -1,5 +1,5 @@
 //
-// Created by omer on 19/12/2019.
+// Created by Dor on 19/12/2019.
 //
 
 #ifndef ALGORITHMICPROGRAMMINGPROJECT__DEFINEVARCOMMAND_H_
@@ -16,7 +16,11 @@ class DefineVarCommand : public Command {
 private:
     SymbolTable *symbolTable;
 public:
-    DefineVarCommand(SymbolTable *symbolTable);
+    /**
+     * Construct a new DefineVarCommand according to a symbol table
+     * @param symTable the symbol table for the DefineVarCommand
+     */
+    DefineVarCommand(SymbolTable *symTable);
 
     int execute(list<string>::iterator) override;
 };
