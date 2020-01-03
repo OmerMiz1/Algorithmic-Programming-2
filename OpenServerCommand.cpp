@@ -6,7 +6,6 @@
 #define MAX_CLIENTS 1
 
 #include "OpenServerCommand.h"
-#include <algorithm>
 
 using namespace std;
 
@@ -101,25 +100,14 @@ void OpenServerCommand::startListening() {
                 throw "Error reading from simulator.";
             }
             toTokens(buffer, tokens);
-        //loop ends if curr buffer includes '\n'.
-        } while (!containsEol(buffer));
+        // Loop ends when read the amount requested from simulator (at least).
+        } while (tokens->size() < pathToIndexMap.size());
 
-        string s;
-        // In-case any new-line chars sneaked in to the front somehow.
-        while(!tokens->empty()) {
-            s = tokens->front();
-            if(s == "\n") {
-                tokens->pop_front();
-            }
-        }
-
-        // Generate index:value map for current sample from server.
-        for(int i = 0;s != "\n"; ++i, s= tokens->front()) {
-            newVals->emplace(i, stof(s));
+         /*Generate index:value map for current sample from server. In our case
+          * should read 36 values and map them. Pop each value after mapped.*/
+        for(int i = 0;i < pathToIndexMap.size(); ++i) {
+            newVals->emplace(i, stof(tokens->front()));
             tokens->pop_front();
-            if(tokens->empty()) {
-                break;
-            }
         }
 
         // Update variables declared '<-' in the global SymbolTable.
@@ -148,8 +136,13 @@ void OpenServerCommand::startListening() {
     close(this->sockfd);
 }
 
+/** Parses input from simulator into a list of floats.
+ *
+ * @param buffer as read from simulator
+ * @param list to insert all float tokens
+ */
 void OpenServerCommand::toTokens(char* buffer, list<string> *list) {
-    regex floatRx("(-?\\d+\\.\\d+)|(\n)");
+    regex floatRx("(-?\\d+\\.\\d+)");
     string bufStr(buffer);
 
     auto start = sregex_iterator(bufStr.begin(), bufStr.end(), floatRx);
@@ -157,58 +150,8 @@ void OpenServerCommand::toTokens(char* buffer, list<string> *list) {
 
     for(sregex_iterator it = start; it != end; ++it) {
         smatch m = *it;
-        list->push_back(m.str());
+        string s = m.str();
+        list->push_back(s);
     }
-}
-/*
-
-
-*/
-/**
- *
- * @param OpenServerCommand sends the incoming string. String looks like:
- * {0.0,32.4,33.1,....} and should have 36 or so floats.
- * @return Map<INDEX, VALUE> with updated values from serer.
- *//*
-
-void OpenServerCommand::parseIncoming(char* buffer, unordered_map<int, float> *currVals, unordered_map<int, float> *nextVals, int* index) {
-    char* token;
-    for(token = strtok(buffer, ","); token != NULL; token = strtok(NULL, ",")) {
-        if(isFloat(token)) {
-            currVals->emplace((*index), stof(token));
-            ++(*index);
-        } else if (containsEol(token)) {
-            string temp(token);
-            size_t eol = temp.find_first_of('\n');
-            currVals->emplace((*index), stof(temp.substr(0, eol-1)));
-            (*index) = 0;
-
-            if(temp.length() == eol+1) {
-                return;
-            }
-
-            nextVals->emplace((*index), stof(temp.substr(eol+1, temp.length())));
-            ++(*index);
-            break;
-        }
-    }
-
-    for(; token!=NULL; token = strtok(NULL, ",")) {
-        if(isFloat(token)) {
-            nextVals->emplace((*index), stof(token));
-            ++(*index);
-        }
-    }
-}
-
-bool OpenServerCommand::isFloat(string str) {
-    regex floatRx("(-?\\d+\\.\\d+)");
-    return regex_match(str, floatRx);
-}
-*/
-
-bool OpenServerCommand::containsEol(char* buffer) {
-    string temp(buffer);
-    return (temp.find_first_of('\n') != string::npos);
 }
 

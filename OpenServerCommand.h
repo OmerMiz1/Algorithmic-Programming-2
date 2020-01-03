@@ -37,10 +37,6 @@ public:
 
     int execute(list<string>::iterator) override;
     void toTokens(char*, list<string>*);
-    /*void parseIncoming(char*, unordered_map<int,float>*,unordered_map<int,float>*, int*);
-    bool isFloat(string);*/
-    bool containsEol(char*);
-
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__OPENSERVERCOMMAND_H_

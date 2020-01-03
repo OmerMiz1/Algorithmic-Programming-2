@@ -22,7 +22,7 @@ var elevator -> sim("/controls/flight/elevator")
 var alt <- sim("/instrumentation/altimeter/indicated-altitude-ft")
 var rpm <- sim("/engines/engine/rpm")
 Print("waiting 2 minutes for gui")
-Sleep(1)
+Sleep(36000)
 Print("let's start")
 warp = 32000
 Sleep(1000)
@@ -40,6 +40,7 @@ Print("engine is warming...")
 Print(rpm)
 while rpm <= 750 {
 	Print(rpm)
+	Sleep(100)
 }
 Sleep(5000)
 Print("let's fly")
