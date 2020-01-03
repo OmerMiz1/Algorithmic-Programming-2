@@ -48,11 +48,14 @@ unordered_map<string, int> Parser::parseXml(const char *path) {
 
     /* Regex find lines starting with <name> and ending with </name> from xml and
        keeps w/e is between them.*/
-    regex varPathRx("\\s*<name>(.*)<\\/name>");
+    regex varPathRx("\\s*<node>(.*)<\\/node>");
 
     // Iterates each line in XML, index each path accordingly.
     for (int index = 0; getline(file, str);) {
         if (regex_search(str, match, varPathRx)) {
+            string temp = "sim(";
+            temp.append(match[1]);
+            temp.append(")");
             symTable.emplace(match[1], index);
             index++;
         }

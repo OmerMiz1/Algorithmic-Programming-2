@@ -11,6 +11,7 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
+#include <algorithm>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -35,7 +36,10 @@ public:
     OpenServerCommand(SymbolTable *, ProgramState *);
 
     int execute(list<string>::iterator) override;
-    void parseSimInput(char[MAX_CHARS], unordered_map<int,float>*);
+    void toTokens(char*, list<string>*);
+    /*void parseIncoming(char*, unordered_map<int,float>*,unordered_map<int,float>*, int*);
+    bool isFloat(string);*/
+    bool containsEol(char*);
 
 };
 

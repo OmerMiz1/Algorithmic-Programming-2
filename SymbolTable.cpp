@@ -3,6 +3,7 @@
 //
 
 #include <thread>
+#include <iostream>
 #include "SymbolTable.h"
 #include "Expression.h"
 
@@ -14,8 +15,8 @@ SymbolTable::SymbolTable(SymbolTable *father) : father(father) {}
 
 float SymbolTable::getVariable(string name) {
 
-    while (this->remoteVariables.count(name) && !this->recursiveContains(name))
-    {
+    while (this->remoteVariables.count(name) && !this->recursiveContains(name)) {
+        cout<<"looking for var"<<endl;
         this_thread::sleep_for(100ms);
     }
     if (!this->recursiveContains(name)) {
@@ -32,7 +33,6 @@ float SymbolTable::getVariable(string name) {
 }
 
 void SymbolTable::setVariable(string name, float num) {
-
     if (!this->contains(name) && this->recursiveContains(name)) {
         this->father->setVariable(name, num);
     } else {

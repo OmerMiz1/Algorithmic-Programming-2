@@ -6,6 +6,7 @@
 #define MAX_CLIENTS 1
 
 #include "OpenServerCommand.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -76,56 +77,63 @@ int OpenServerCommand::execute(list<string>::iterator it) {
  */
 void OpenServerCommand::startListening() {
     int valRead;
-    char buffer[MAX_CHARS];
-    string::iterator it;
 
     // Initialize clock variables for putting thread to sleep.
     chrono::milliseconds duration, timePassed;
     chrono::steady_clock::time_point start, end;
     duration = chrono::milliseconds(100);
     unordered_map<string, int> pathToIndexMap = Parser::parseXml("../generic_small.xml");
-    unordered_map<int,float> *currSample = new unordered_map<int,float>;
-    unordered_map<int,float> *nextSample = new unordered_map<int,float>;
+    unordered_map<int, float> *newVals = new unordered_map<int, float>;
+    list<string> *tokens = new list<string>;
 
     // The listening loop, will break only if running will become false.
     while (programState->getState()) {
         // Start clock
         start = chrono::steady_clock::now();
+        char buffer[MAX_CHARS];
 
         // Read to buffer until the entire message is received (might be cut midway)
         do {
             valRead = read(client_sock, buffer, MAX_CHARS);
-
             // Error reading
             if (valRead < 0) {
                 programState->turnOff();
                 throw "Error reading from simulator.";
             }
+            toTokens(buffer, tokens);
+        //loop ends if curr buffer includes '\n'.
+        } while (!containsEol(buffer));
 
-            // Parse data from simulator into data.
-            string temp(buffer);
-            parseSimInput(buffer, currSample);
-            int firstEol = temp.find_first_of('\n');
-            if(firstEol != 0) {
-                parseSimInput(buffer+firstEol, nextSample);
-                break;
-            }
-        } while (programState->getState());
-
-//        this_thread::sleep_for(1500ms);
-//        cout <<bufStr1 << "\n" << endl; //TODO clear before submitting
-
-        // If nullptr returned - recieved corrupt data
-        if (!currSample->empty()) {
-            // Otherwise update variables declared '<-' in the global SymbolTable.
-            for (auto pair : symTable->getIngoing()) {
-                /* pair.first == "name" , pair.second == "path"
-                 * newVals.first == "index", newVals.second == "value"
-                 * */
-                int index = pathToIndexMap[pair.second];
-                symTable->setVariable(pair.first, (*currSample)[index]);
+        string s;
+        // In-case any new-line chars sneaked in to the front somehow.
+        while(!tokens->empty()) {
+            s = tokens->front();
+            if(s == "\n") {
+                tokens->pop_front();
             }
         }
+
+        // Generate index:value map for current sample from server.
+        for(int i = 0;s != "\n"; ++i, s= tokens->front()) {
+            newVals->emplace(i, stof(s));
+            tokens->pop_front();
+            if(tokens->empty()) {
+                break;
+            }
+        }
+
+        // Update variables declared '<-' in the global SymbolTable.
+        for (auto pair : symTable->getIngoing()) {
+            /* pair.first == "name" , pair.second == "path"
+             * newVals.first == "index", newVals.second == "value"
+             * */
+            auto curr = pathToIndexMap.find(pair.second);
+            if(curr != pathToIndexMap.end()) {
+                auto currNew = newVals->find(curr->second);
+                symTable->setVariable(pair.first, currNew->second);
+            }
+        }
+        newVals->clear();
 
         // End clock and then calculate time passed.
         end = chrono::steady_clock::now();
@@ -140,33 +148,67 @@ void OpenServerCommand::startListening() {
     close(this->sockfd);
 }
 
+void OpenServerCommand::toTokens(char* buffer, list<string> *list) {
+    regex floatRx("(-?\\d+\\.\\d+)|(\n)");
+    string bufStr(buffer);
+
+    auto start = sregex_iterator(bufStr.begin(), bufStr.end(), floatRx);
+    auto end = sregex_iterator();
+
+    for(sregex_iterator it = start; it != end; ++it) {
+        smatch m = *it;
+        list->push_back(m.str());
+    }
+}
+/*
+
+
+*/
 /**
  *
  * @param OpenServerCommand sends the incoming string. String looks like:
  * {0.0,32.4,33.1,....} and should have 36 or so floats.
  * @return Map<INDEX, VALUE> with updated values from serer.
- */
-void OpenServerCommand::parseSimInput(char buffer[MAX_CHARS], unordered_map<int,float>* map) {
-    string incoming(buffer), temp;
-    int index = 0;
+ *//*
 
-    // Check if all chars are valid.
-    if(incoming.find_first_not_of("0123456789.,") != string::npos) {
-        return;
-    }
+void OpenServerCommand::parseIncoming(char* buffer, unordered_map<int, float> *currVals, unordered_map<int, float> *nextVals, int* index) {
+    char* token;
+    for(token = strtok(buffer, ","); token != NULL; token = strtok(NULL, ",")) {
+        if(isFloat(token)) {
+            currVals->emplace((*index), stof(token));
+            ++(*index);
+        } else if (containsEol(token)) {
+            string temp(token);
+            size_t eol = temp.find_first_of('\n');
+            currVals->emplace((*index), stof(temp.substr(0, eol-1)));
+            (*index) = 0;
 
-    for(char c : incoming) {
-        if(c == '\n') {
-            map->emplace(index,stof(temp));
-            return;
-        } else if(c == ',') {
-            map->emplace(index,stof(temp));
-            index++;
-            temp.clear();
-            continue;
-        } else {
-            temp+=c;
+            if(temp.length() == eol+1) {
+                return;
+            }
+
+            nextVals->emplace((*index), stof(temp.substr(eol+1, temp.length())));
+            ++(*index);
+            break;
         }
     }
+
+    for(; token!=NULL; token = strtok(NULL, ",")) {
+        if(isFloat(token)) {
+            nextVals->emplace((*index), stof(token));
+            ++(*index);
+        }
+    }
+}
+
+bool OpenServerCommand::isFloat(string str) {
+    regex floatRx("(-?\\d+\\.\\d+)");
+    return regex_match(str, floatRx);
+}
+*/
+
+bool OpenServerCommand::containsEol(char* buffer) {
+    string temp(buffer);
+    return (temp.find_first_of('\n') != string::npos);
 }
 
