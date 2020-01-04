@@ -17,6 +17,9 @@ float SymbolTable::getVariable(string name) {
     //while asked for a variable that's updated by the server and wasn't updated yet, wain 0.1 seconds
     while (this->getIngoing().count(name) && !this->recursiveContains(name))
     {
+        //TODO remove only the first line before submitting!!!
+        std::cout << "asked for a variable that the server havn't added yet \"" + name + "\"" << std::endl;
+        this_thread::sleep_for(100ms);
     }
     //if the variable isn't known to the symbol table (or his fathers)
     if (!this->recursiveContains(name)) {
