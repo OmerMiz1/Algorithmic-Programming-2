@@ -52,6 +52,8 @@ int MainThread::execute(list<string>::iterator it) {
 
         // Each iteration executes a line from the '.txt' file.
         for (it = tokens.begin(); it != tokens.end();) {
+            //TODO remove before submitting!
+            //cout << "executed " + *it + " command on main thread" << endl;
             advance(it, parser->parseCommand(it));
         }
 
@@ -59,6 +61,8 @@ int MainThread::execute(list<string>::iterator it) {
     } else {
         while(it->compare("}") != 0) {
             advance(it, parser->parseCommand(it));
+            //TODO remove before submitting!
+            //cout << "executed " + *it + " command on sub thread" << endl;
         }
     }
 
