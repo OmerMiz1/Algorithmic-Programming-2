@@ -237,6 +237,8 @@ Expression *Interpreter::build(queue<string *> postfix) {
     while (!postfix.empty()) {
         //copy the top of the queue than delete is content before poping
         string current = *(postfix.front());
+        string::iterator end_pos = std::remove(current.begin(), current.end(), ' ');
+        current.erase(end_pos, current.end());
         if (postfix.front() != nullptr) {
             delete postfix.front();
         }
