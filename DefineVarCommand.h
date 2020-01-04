@@ -23,6 +23,14 @@ public:
     DefineVarCommand(SymbolTable *symTable);
 
     int execute(list<string>::iterator) override;
+
+private:
+    /**
+     * Gets a string and determines if he his of type float
+     * @param str the string that needs to be checked
+     * @return true if the string his a float, false otherwise
+     */
+    bool isFloat(string str);
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__DEFINEVARCOMMAND_H_

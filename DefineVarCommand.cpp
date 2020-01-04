@@ -34,14 +34,36 @@ int DefineVarCommand::execute(list<string>::iterator it) {
     if (direction.compare("->") == 0 || direction.compare("<-") == 0) {
         this->symbolTable->setRemoteVariable(name, direction, value);
     } else if (direction.compare("=") == 0) {
-        Interpreter *interpreter = new Interpreter();
-        //TODO remove before submit
-        interpreter->setVariables(this->symbolTable->updatedMap());
-        Expression *expression = interpreter->interpret(value);
-        this->symbolTable->setVariable(name, expression->calculate());
+        if (this->isFloat(value)) {
+            this->symbolTable->setVariable(name, stof(value));
+        } else {
+            this->symbolTable->setVariable(name, this->symbolTable->getVariable(value));
+        }
     } else {
         //TODO this line is only for debugging, remove before done
         throw "ERROR in add defineVarCommand with:" + name + " " + direction + " " + value;
     }
     return skip; //returns the amount to be skipped after this command, 4 - if starts with "var", 3 - if not
+}
+
+bool DefineVarCommand::isFloat(string str) {
+    bool wasDot = false;
+    auto it = str.begin();
+    while (it != str.end()) {
+        if (*it == '.') {
+            if (!wasDot) {
+                wasDot = true;
+                it++;
+                continue;
+            } else {
+                return false;
+            }
+        }
+        if (*it!='0' && *it!='1' && *it!='2' && *it!='3' && *it!='4' &&
+                *it!='5' && *it!='6' && *it!='7' && *it!='8' && *it!='9') {
+            return false;
+        }
+        it++;
+    }
+    return true;
 }
