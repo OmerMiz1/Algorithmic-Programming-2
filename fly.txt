@@ -39,8 +39,7 @@ autostart = 1
 Print("engine is warming...")
 Print(rpm)
 while rpm <= 750 {
-	Print(rpm)
-	Sleep(100)
+    Print(rpm)
 }
 Sleep(5000)
 Print("let's fly")
@@ -51,6 +50,7 @@ while alt < 1000 {
 	rudder = (h0 - heading)/80
 	aileron = -roll / 70
 	elevator = pitch / 50
+	Print(alt)
 	Sleep(250)
 }
 Print("done")

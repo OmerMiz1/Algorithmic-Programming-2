@@ -14,13 +14,13 @@ SymbolTable::SymbolTable() {
 SymbolTable::SymbolTable(SymbolTable *father) : father(father) {}
 
 float SymbolTable::getVariable(string name) {
-    //while asked for a variable that's updated by the server and wasn't updated yet, wain 0.1 seconds
-//    while (this->getIngoing().count(name) && !this->recursiveContains(name))
-//    {
-//        //TODO remove only the first line before submitting!!!
-//        std::cout << "asked for a variable that the server havn't added yet \"" + name + "\"" << std::endl;
-//        this_thread::sleep_for(100ms);
-//    }
+    while (this->getIngoing().count(name) && !this->recursiveContains(name))
+    {
+        //TODO remove only the first line before submitting!!!
+        std::cout << "asked for a variable that the server havn't added yet \"" + name + "\"" << std::endl;
+        this_thread::sleep_for(100ms);
+    }
+    lock_guard<mutex> guard(this->mtx);
     //if the variable isn't known to the symbol table (or his fathers)
     if (!this->recursiveContains(name)) {
         //it's an expression, evaluate him and return his value
@@ -38,7 +38,7 @@ float SymbolTable::getVariable(string name) {
 }
 
 void SymbolTable::setVariable(string name, float num) {
-
+    lock_guard<mutex> guard(this->mtx);
     if (!this->contains(name) && this->recursiveContains(name)) {
         this->father->setVariable(name, num);
     } else {
@@ -48,6 +48,7 @@ void SymbolTable::setVariable(string name, float num) {
 }
 
 void SymbolTable::setRemoteVariable(string name, string direction, string simLocation) {
+    lock_guard<mutex> guard(this->mtx);
     //removes the - sim(" - from the start of the location string
     simLocation.erase(0,5);
     //removes the - ) - from the start of the location string
@@ -77,7 +78,6 @@ map<string, string> SymbolTable::getIngoing() {
 }
 
 map<string, float> SymbolTable::getOutgoing() {
-
     map<string, float> temp;
     auto it = this->outgoing.begin();
     while (it != this->outgoing.end()) {
@@ -89,7 +89,6 @@ map<string, float> SymbolTable::getOutgoing() {
 }
 
 map<string, float> SymbolTable::updatedMap() {
-
     map<string, float> temp;
     if (this->father != nullptr) {
         temp = this->father->updatedMap();
@@ -103,12 +102,10 @@ map<string, float> SymbolTable::updatedMap() {
 }
 
 void SymbolTable::addToIngoing(string name, string simLocation) {
-
     this->ingoing[name] = simLocation;
 }
 
 void SymbolTable::addToOutgoingIfNeeded(string name, float num) {
-
     if (this->father == nullptr) {
         if (this->remoteVariables.count(name)) {
             if (this->remoteVariables[name].first == "->") {
@@ -121,5 +118,7 @@ void SymbolTable::addToOutgoingIfNeeded(string name, float num) {
 }
 
 void SymbolTable::clearOutgoing() {
+    lock_guard<mutex> guard(this->mtx);
     this->outgoing.clear();
 }
+

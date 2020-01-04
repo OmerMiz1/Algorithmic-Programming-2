@@ -29,14 +29,15 @@ private:
     int sockfd;
     SymbolTable *symTable;
     ProgramState *programState;
-
     void startListening();
 
 public:
     OpenServerCommand(SymbolTable *, ProgramState *);
-
     int execute(list<string>::iterator) override;
-    void toTokens(char*, list<string>*);
+    void toTokens(const char*, list<string>*);
+    void mapTokens(list<string>*, unordered_map<int,float>*);
+    void updateIngoing(unordered_map<int,float>*);
+    void clearOldTokens(list<string>*);
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__OPENSERVERCOMMAND_H_

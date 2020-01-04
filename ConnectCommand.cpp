@@ -39,8 +39,13 @@ int ConnectCommand::execute(list<string>::iterator it) {
     address.sin_port = htons(port);
 
     while ((this->isConnect = connect(clientSocket, (struct sockaddr *) &address, sizeof(address)))) {
+        if(this->isConnect == -1) {
+            throw "Error connecting to simulator";
+        }
         this_thread::sleep_for(100ms);
     }
+
+    cout<<"Client: connected to simulator successfully"<<endl;
 
     thread th(&ConnectCommand::startSending, this);
     th.detach();

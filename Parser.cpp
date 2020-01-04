@@ -26,12 +26,12 @@ int Parser::parseCommand(list<string>::iterator it) {
     // Cmd found in map, just executes
     if (currCmd != this->cmdMap->end()) {
         return currCmd->second->execute(it);
-
     // Cmd not in map so it is an assignment.
     } else {
         return this->cmdMap->find("var")->second->execute(it);
     }
-    //TODO support FunctionCommands when done.
+    //TODO support FunctionCommands when done. can be done by inserting the assignment
+    // if into an else if (symVariable.contains(it)) and adding else for function name
 }
 
 /**
@@ -63,21 +63,4 @@ unordered_map<string, int> Parser::parseXml(const char *path) {
 
     file.close();
     return symTable;
-}
-
-/**
- *
- * @param it points to the condition token (1 token after the type token)
- * @param list to update with current scopes tokens.
- * @return a counter to how many tokens has been read, to advance iterator.
- */
-//TODO should be used in ConditionCommand when parsing scope
-int updateScopeTokens(list<string>::iterator it, list<string> list) {
-    int count = 0;
-
-    // NOTE: no nested scopes.
-    for (count = 0; it->compare("}") != 0; ++it, ++count) {
-        list.emplace_back(*it);
-    }
-    return count;
 }

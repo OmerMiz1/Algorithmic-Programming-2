@@ -13,7 +13,6 @@ int ConditionCommand::execute(list<string>::iterator it) {
     // 1st token is the "condtion type" and 2nd is the condition itself (string).
     ++it;
     this->myCondition = new Condition(this->symTable, *it);
-    ++count;    // +1 for the extra '}'
     return count;
 }
 
@@ -34,6 +33,7 @@ int ConditionCommand::countScopeTokens(list<string>::iterator it) {
             scopesCount--;
         }
     }
+    ++count; // +1 for the extra '}'
     return count;
 }
 

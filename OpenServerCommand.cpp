@@ -4,6 +4,7 @@
 
 #define MAX_CHARS 1024
 #define MAX_CLIENTS 1
+#define FLOAT_MAX_DIGS 15
 
 #include "OpenServerCommand.h"
 
@@ -52,9 +53,10 @@ int OpenServerCommand::execute(list<string>::iterator it) {
     while (!(this->client_sock = accept(sockfd, (struct sockaddr *) &address, (socklen_t *) &address))) {
         if (client_sock == -1) {
             programState->turnOff();
-            throw "Error accepting client";
+            throw "Error accepting simulator";
         }
     }
+    cout<<"Server: simulator accepted successfully"<<endl;
 
     // IF ALL OK, CREATE LISTENING THREAD
     try {
@@ -75,13 +77,14 @@ int OpenServerCommand::execute(list<string>::iterator it) {
  * @param symTable to update.
  */
 void OpenServerCommand::startListening() {
-    int valRead;
+    int bytesRead, maxVarCount = Parser::parseXml("../generic_small.xml").size();
+    // Maximal chars in float string + 1 for ',' times max ingoing variables.
+    int minBytes = (FLOAT_MAX_DIGS+1)*maxVarCount;
 
     // Initialize clock variables for putting thread to sleep.
     chrono::milliseconds duration, timePassed;
     chrono::steady_clock::time_point start, end;
-    duration = chrono::milliseconds(100);
-    unordered_map<string, int> pathToIndexMap = Parser::parseXml("../generic_small.xml");
+    duration = 100ms;
     unordered_map<int, float> *newVals = new unordered_map<int, float>;
     list<string> *tokens = new list<string>;
 
@@ -89,38 +92,31 @@ void OpenServerCommand::startListening() {
     while (programState->getState()) {
         // Start clock
         start = chrono::steady_clock::now();
-        char buffer[MAX_CHARS];
 
-        // Read to buffer until the entire message is received (might be cut midway)
+        // Re-initialize every iteration
+        char buffer[MAX_CHARS] = {0};
+        bytesRead = 0;
+        string bufStr("");
+
+        if(tokens->size() > 100) {
+            clearOldTokens(tokens);
+        }
+
         do {
-            valRead = read(client_sock, buffer, MAX_CHARS);
-            // Error reading
-            if (valRead < 0) {
-                programState->turnOff();
-                throw "Error reading from simulator.";
-            }
+            bytesRead += read(client_sock, buffer, MAX_CHARS);
             toTokens(buffer, tokens);
-        // Loop ends when read the amount requested from simulator (at least).
-        } while (tokens->size() < pathToIndexMap.size());
+        } while(0 <= bytesRead && bytesRead < minBytes);
 
-         /*Generate index:value map for current sample from server. In our case
-          * should read 36 values and map them. Pop each value after mapped.*/
-        for(int i = 0;i < pathToIndexMap.size(); ++i) {
-            newVals->emplace(i, stof(tokens->front()));
-            tokens->pop_front();
+        // Error reading
+        if (bytesRead < 0) {
+            programState->turnOff();
+            throw "Error reading from simulator.";
         }
 
-        // Update variables declared '<-' in the global SymbolTable.
-        for (auto pair : symTable->getIngoing()) {
-            /* pair.first == "name" , pair.second == "path"
-             * newVals.first == "index", newVals.second == "value"
-             * */
-            auto curr = pathToIndexMap.find(pair.second);
-            if(curr != pathToIndexMap.end()) {
-                auto currNew = newVals->find(curr->second);
-                symTable->setVariable(pair.first, currNew->second);
-            }
-        }
+        mapTokens(tokens, newVals);
+        updateIngoing(newVals);
+
+        // Clear current updates
         newVals->clear();
 
         // End clock and then calculate time passed.
@@ -141,8 +137,8 @@ void OpenServerCommand::startListening() {
  * @param buffer as read from simulator
  * @param list to insert all float tokens
  */
-void OpenServerCommand::toTokens(char* buffer, list<string> *list) {
-    regex floatRx("(-?\\d+\\.\\d+)");
+void OpenServerCommand::toTokens(const char* buffer, list<string> *list) {
+    regex floatRx("(-?\\d+\\.\\d+)|(\n)");
     string bufStr(buffer);
 
     auto start = sregex_iterator(bufStr.begin(), bufStr.end(), floatRx);
@@ -155,3 +151,42 @@ void OpenServerCommand::toTokens(char* buffer, list<string> *list) {
     }
 }
 
+/*Generate index:value map for current sample from server. In our case
+          * should read 36 values and map them. Pop each value after mapped.*/
+void OpenServerCommand::mapTokens(list<string> *tokens, unordered_map<int,float> *map) {
+    for(int i =0; !tokens->empty() && tokens->front() != "\n"; ++i, tokens->pop_front()) {
+        map->emplace(i, stof(tokens->front()));
+    }
+
+    if(!tokens->empty()) {
+        tokens->pop_front();
+    }
+}
+
+// Update variables declared '<-' in the global SymbolTable.
+void OpenServerCommand::updateIngoing(unordered_map<int,float> *updates) {
+    unordered_map<string, int> pathToIndex = Parser::parseXml("../generic_small.xml");
+
+    // <Name : Path>
+    for (auto namePath : symTable->getIngoing()) {
+        // <Path, Index>
+        auto pathIndex = pathToIndex.find(namePath.second);
+        if(pathIndex != pathToIndex.end() && pathIndex->second < updates->size()) {
+            // <Index : New Value>
+            auto indexNewValue = updates->find(pathIndex->second);
+            /*if(this->symTable->contains(namePath.first)) { //TODO remove before submition.
+                cout << namePath.first;
+                cout <<"   before: #"<<this->symTable->getVariable(namePath.first);
+                cout << " after: $" << indexNewValue->second << endl;
+            }*/
+            symTable->setVariable(namePath.first, indexNewValue->second);
+        }
+    }
+}
+
+void OpenServerCommand::clearOldTokens(list<string> *tokens) {
+    list<string>::iterator it = tokens->end();
+    // Finds last occurrence of '\n'
+    for(--it; it->compare("\n"); --it) {}
+    tokens->erase(tokens->begin(), it);
+}
