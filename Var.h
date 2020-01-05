@@ -16,8 +16,6 @@ private:
     string name, direction;
     float value;
 
-    //TODO add string that indicates the var location in sim
-
 public:
     Var(string varName, float varValue) : name(move(varName)), value(varValue) {}
 

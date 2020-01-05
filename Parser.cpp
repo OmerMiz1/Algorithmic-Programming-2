@@ -30,8 +30,6 @@ int Parser::parseCommand(list<string>::iterator it) {
     } else {
         return this->cmdMap->find("var")->second->execute(it);
     }
-    //TODO support FunctionCommands when done. can be done by inserting the assignment
-    // if into an else if (symVariable.contains(it)) and adding else for function name
 }
 
 /**

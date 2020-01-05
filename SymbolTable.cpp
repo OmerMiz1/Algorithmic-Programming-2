@@ -16,8 +16,6 @@ SymbolTable::SymbolTable(SymbolTable *parent) : father(parent) {}
 float SymbolTable::getVariable(string name) {
     while (this->getIngoing().count(name) && !this->recursiveContains(name))
     {
-        //TODO remove only the first line before submitting!!!
-        std::cout << "asked for a variable that the server hasn't been added yet \"" + name + "\"" << std::endl;
         this_thread::sleep_for(chrono::milliseconds(100));
     }
     lock_guard<mutex> guard(this->mtx);
@@ -26,7 +24,7 @@ float SymbolTable::getVariable(string name) {
         //it's an expression, evaluate him and return his value
         Interpreter interpreter;
         interpreter.setVariables(this->updatedMap());
-        name = "(" + name + ")"; //TODO check if needed
+        name = "(" + name + ")";
         Expression *expression = interpreter.interpret(name);
         return static_cast<float>(expression->calculate());
     } else if (this->contains(name)) {

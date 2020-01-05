@@ -201,11 +201,6 @@ void OpenServerCommand::updateIngoing(unordered_map<int, float> *updates) {
                 && static_cast<unsigned>(pathIndex->second) < updates->size()) {
             // <Index : New Value>
             auto indexNewValue = updates->find(pathIndex->second);
-            /*if(this->symTable->contains(namePath.first)) { //TODO remove before submition.
-                cout << namePath.first;
-                cout <<"   before: #"<<this->symTable->getVariable(namePath.first);
-                cout << " after: $" << indexNewValue->second << endl;
-            }*/
             symTable->setVariable(namePath.first, indexNewValue->second);
         }
     }

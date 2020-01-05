@@ -20,7 +20,6 @@ int DefineVarCommand::execute(list<string>::iterator it) {
     if (it->compare("var") == 0) {
         ++it; // "var" advance to "<var_name>"
         skip = 4;
-        //TODO check if exist
     } else {
         skip = 3;
     }
@@ -38,9 +37,6 @@ int DefineVarCommand::execute(list<string>::iterator it) {
         } else {
             this->symbolTable->setVariable(name, this->symbolTable->getVariable(value));
         }
-    } else {
-        //TODO this line is only for debugging, remove before done
-        throw "ERROR in add defineVarCommand with:" + name + " " + direction + " " + value;
     }
     return skip; //returns the amount to be skipped after this command, 4 - if starts with "var", 3 - if not
 }
