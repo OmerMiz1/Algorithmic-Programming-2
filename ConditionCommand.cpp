@@ -30,9 +30,10 @@ int ConditionCommand::execute(list<string>::iterator it) {
  */
 int ConditionCommand::countScopeTokens(list<string>::iterator it) {
     int count = 0, scopesCount = 1;
+    advance(it,2);
 
     // In case of inner scopes, keeps counting until the relevant end of scope.
-    for (count = 0; scopesCount > 0; ++it, ++count) {
+    for (count = 2; scopesCount > 0; ++it, ++count) {
         if (it->compare("if") == 0
             || it->compare("while") == 0) { // New scope found
             scopesCount++;

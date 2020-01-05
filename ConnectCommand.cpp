@@ -8,8 +8,8 @@ using namespace std;
 //
 // Created by Dor on 19/12/2019.
 
-ConnectCommand::ConnectCommand(SymbolTable *symTable, ProgramState *programState)
-        : symbolTable(symTable), programState(programState) {}
+ConnectCommand::ConnectCommand(SymbolTable *symTable, ProgramState *state)
+        : symbolTable(symTable), programState(state) {}
 
 int ConnectCommand::execute(list<string>::iterator it) {
     ++it;
@@ -102,5 +102,3 @@ void ConnectCommand::startSending() {
     }
     close(clientSocket);
 }
-
-ConnectCommand::~ConnectCommand() {}

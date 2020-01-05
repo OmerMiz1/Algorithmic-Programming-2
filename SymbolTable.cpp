@@ -11,7 +11,7 @@ SymbolTable::SymbolTable() {
     this->father = nullptr;
 }
 
-SymbolTable::SymbolTable(SymbolTable *father) : father(father) {}
+SymbolTable::SymbolTable(SymbolTable *parent) : father(parent) {}
 
 float SymbolTable::getVariable(string name) {
     while (this->getIngoing().count(name) && !this->recursiveContains(name))

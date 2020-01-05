@@ -35,7 +35,7 @@ public:
      * Construct a sub-SymbolTable that as a father-SymbolTable
      * @param father the father-SymbolTable
      */
-    explicit SymbolTable(SymbolTable *father);
+    explicit SymbolTable(SymbolTable*);
 
     /**
      * Get a variable according to his name
@@ -43,14 +43,14 @@ public:
      * @param name the name of the desired variable
      * @return the value of the desired variable as a float
      */
-    float getVariable(string name);
+    float getVariable(string);
 
     /**
      * Sets a new value for a variable
      * @param name the name of the variable
      * @param value the new value of the variable
      */
-    void setVariable(string name, float value);
+    void setVariable(string, float);
 
     /**
      * Adds a variable to the remote map
@@ -58,21 +58,21 @@ public:
      * @param direction the direction of the remote variable
      * @param simLocation the location of the variable at the simulator
      */
-    void setRemoteVariable(string name, string direction, string simLocation);
+    void setRemoteVariable(string, string, string);
 
     /**
      * Check if the symbol table contains the variable (as a local)
      * @param name the name of the variable we are searching for
      * @return true if the symbol table contains the variable, false otherwise
      */
-    bool contains(string name);
+    bool contains(string);
 
     /**
      * Check if the symbol table or his father contains the variable (as a local)
      * @param name the name of the variable we are searching for
      * @return true if the symbol table contains the variable, false otherwise
      */
-    bool recursiveContains(string name);
+    bool recursiveContains(string);
 
     /**
      * Returns a map that contains the name of the ingoing variables and their path
