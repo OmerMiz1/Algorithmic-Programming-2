@@ -26,6 +26,7 @@ protected:
 
 public:
     explicit ConditionCommand(Command*, SymbolTable*);
+    ~ConditionCommand() override;
     int execute(list<string>::iterator) override;
     int countScopeTokens(list<string>::iterator it);
 };

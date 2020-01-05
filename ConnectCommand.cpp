@@ -42,7 +42,7 @@ int ConnectCommand::execute(list<string>::iterator it) {
         if(this->isConnect == -1) {
             throw "Error connecting to simulator";
         }
-        this_thread::sleep_for(100ms);
+        this_thread::sleep_for(chrono::milliseconds(100));
     }
 
     cout<<"Client: connected to simulator successfully"<<endl;

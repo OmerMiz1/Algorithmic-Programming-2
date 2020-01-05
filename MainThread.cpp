@@ -18,9 +18,8 @@ MainThread::MainThread(SymbolTable *table, MainThread *outer): father(outer) {
 }
 
 MainThread::~MainThread() {
-    delete this->symTable;
-    delete this->parser;
-    this->cmdMap->clear();
+    delete symTable;
+    delete cmdMap;
 }
 
 /** Command interface forces to implement execute with iterator, so made this 1
@@ -43,7 +42,7 @@ int MainThread::execute(list<string>::iterator it) {
 
     // Init commands map and give it to new Parser object.
     initCommands();
-    this->parser = new Parser(cmdMap);
+    Parser *parser = new Parser(cmdMap);
 
     // FIRST MAIN TOKEN ITERATION
     if (this->father == nullptr) {

@@ -18,7 +18,7 @@ float SymbolTable::getVariable(string name) {
     {
         //TODO remove only the first line before submitting!!!
         std::cout << "asked for a variable that the server havn't added yet \"" + name + "\"" << std::endl;
-        this_thread::sleep_for(100ms);
+        this_thread::sleep_for(chrono::milliseconds(100));
     }
     lock_guard<mutex> guard(this->mtx);
     //if the variable isn't known to the symbol table (or his fathers)

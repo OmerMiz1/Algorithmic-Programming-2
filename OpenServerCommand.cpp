@@ -19,12 +19,16 @@ OpenServerCommand::OpenServerCommand(SymbolTable *sym, ProgramState *state)
  * @return number of tokens to advance in main loop.
  */
 int OpenServerCommand::execute(list<string>::iterator it) {
-    int port = 0;
+    uint16_t port;
     sockaddr_in address{};
 
-    // Parse port token
     ++it;
-    port = stoi(*it);
+    // Parse port token
+    try {
+        port = stoi(*it);
+    } catch (const char* e){
+        throw e;
+    }
 
     // OPEN SOCKET
     this->sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -79,16 +83,15 @@ int OpenServerCommand::execute(list<string>::iterator it) {
  * @param symTable to update.
  */
 void OpenServerCommand::startListening() {
-    int totalBytesRead=0, maxVars, minBytes;
-    chrono::milliseconds duration, timePassed;
+    unsigned int maxVars, totalBytesRead=0, minBytes;
+    chrono::milliseconds maxSleep, timePassed;
     chrono::steady_clock::time_point start, end;
-    list<string> *tokens = new list<string>;
-    unordered_map<int, float> *newVals = new unordered_map<int, float>;
+    auto *tokens = new list<string>;
+    auto *newVals = new unordered_map<int, float>;
 
     maxVars = Parser::parseXml("../generic_small.xml").size();
     minBytes = (FLOAT_MAX_DIGS + 1) * maxVars; // +1 for ',' delimiter.
-
-
+    maxSleep = chrono::milliseconds(100); // Max sleep time
 
     // The listening loop, will break only if running will become false.
     while (programState->getState()) {
@@ -99,7 +102,7 @@ void OpenServerCommand::startListening() {
         int bytesRead =0;
         char buffer[MAX_CHARS] = {0};
         bytesRead = 0;
-        string bufStr = "";
+        string bufStr;
 
         // Optimization: if tokens is larger then 3 times max amount, clean it.
         if (tokens->size() > maxVars*3) {
@@ -108,6 +111,7 @@ void OpenServerCommand::startListening() {
 
         do {
             bytesRead += read(client_sock, buffer, MAX_CHARS);
+
             // Error reading
             if (bytesRead == -1) {
                 programState->turnOff();
@@ -129,11 +133,10 @@ void OpenServerCommand::startListening() {
         timePassed = chrono::duration_cast<chrono::milliseconds>(end - start);
 
         // Read from server at-most 10 times a second (can be less)
-        if (duration.count() - timePassed.count() > 0) {
-            this_thread::sleep_for(100ms - timePassed);
+        if (maxSleep.count() - timePassed.count() > 0) {
+            this_thread::sleep_for(maxSleep - timePassed);
         }
     }
-
     close(this->sockfd);
 }
 
@@ -188,11 +191,12 @@ void OpenServerCommand::updateIngoing(unordered_map<int, float> *updates) {
         pathToIndex = Parser::parseXml("../generic_small.xml");
 
     // <Name : Path>
-    for (auto namePath : symTable->getIngoing()) {
+    for (auto const namePath : symTable->getIngoing()) {
         // <Path, Index>
         auto pathIndex = pathToIndex.find(namePath.second);
+        // Used casting cause of warning, in reality its always positive.
         if (pathIndex != pathToIndex.end()
-            && pathIndex->second < updates->size()) {
+                && static_cast<unsigned>(pathIndex->second) < updates->size()) {
             // <Index : New Value>
             auto indexNewValue = updates->find(pathIndex->second);
             /*if(this->symTable->contains(namePath.first)) { //TODO remove before submition.
@@ -212,7 +216,7 @@ void OpenServerCommand::updateIngoing(unordered_map<int, float> *updates) {
  * @param tokens list of string tokens to update.
  */
 void OpenServerCommand::clearOldTokens(list<string> *tokens) {
-    list<string>::iterator it = tokens->end();
+    auto it = tokens->end();
     // Finds last occurrence of '\n'
     for (--it; it->compare("\n"); --it) {}
     tokens->erase(tokens->begin(), it);

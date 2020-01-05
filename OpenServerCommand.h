@@ -25,8 +25,8 @@ using namespace std;
 
 class OpenServerCommand : public Command {
  private:
-    int sockfd;
-    int client_sock;
+    int sockfd=0;
+    int client_sock=0;
     SymbolTable *symTable;
     ProgramState *programState;
     void startListening();

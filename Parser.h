@@ -24,15 +24,9 @@ private:
 
 public:
     explicit Parser(unordered_map<string, Command *> *);
-
     ~Parser();
-
     int parseCommand(list<string>::iterator);
-
     static unordered_map<string, int> parseXml(const char *);
-
-    static unordered_map<int, float>* parseServerOutput(string incoming);
-
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__PARSER_H_

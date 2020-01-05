@@ -26,18 +26,17 @@
 
 class MainThread : Command {
 private:
-    Parser *parser;
     SymbolTable *symTable;
-    MainThread *father = nullptr;
-    unordered_map<string, Command *> *cmdMap = new unordered_map<string, Command *>;
     ProgramState *programState = new ProgramState();
+    MainThread *father = nullptr;
+    unordered_map<string, Command *> *cmdMap;
 
     void initCommands();
 
 public:
     MainThread();
     explicit MainThread(SymbolTable*, MainThread*);
-    ~MainThread();
+    ~MainThread() override;
 
     int execute(list<string>::iterator) override;
     int execute();

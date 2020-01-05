@@ -21,7 +21,7 @@ Parser::~Parser() {
  * @return How many tokens to jump to get to next command.
  */
 int Parser::parseCommand(list<string>::iterator it) {
-    unordered_map<string, Command *>::iterator currCmd = this->cmdMap->find(*it);
+    auto currCmd = this->cmdMap->find(*it);
 
     // Cmd found in map, just executes
     if (currCmd != this->cmdMap->end()) {

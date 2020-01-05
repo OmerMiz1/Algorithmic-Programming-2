@@ -15,10 +15,10 @@ using namespace std;
 
 class Print : public Command {
 
-    SymbolTable *symbolTable;
+    SymbolTable *symTable;
 
 public:
-    Print(SymbolTable *symbolTable) : symbolTable(symbolTable) {}
+    explicit Print(SymbolTable *symbolTable) : symTable(symbolTable) {}
 
     /** Prints a message (at it+1)
      *
@@ -32,7 +32,7 @@ public:
             it->erase(0,1);
             cout << *it << endl;
         } else {
-            cout << this->symbolTable->getVariable(*it) << endl;
+            cout << this->symTable->getVariable(*it) << endl;
         }
         return 2;
     }
