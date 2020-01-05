@@ -37,14 +37,14 @@ public:
     ConnectCommand(SymbolTable *symTable, ProgramState *programState);
     ~ConnectCommand();
 
+    ~ConnectCommand();
+
     int execute(list<string>::iterator it) override;
 
     /**
      * Opens a connection with the simulator and sends him data continuely, should be executed as a thread.
      */
     void startSending();
-
-    void setState(ProgramState *);
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__CONNECTCOMMAND_H_

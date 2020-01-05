@@ -73,7 +73,7 @@ void ConnectCommand::startSending() {
                 //converts the command to type const char*
                 const char *temp = command.c_str();
                 //sends the command and saves the approval of the simulator
-                int isSent = send(clientSocket, temp, strlen(temp), 0);
+                ssize_t isSent = send(clientSocket, temp, strlen(temp), 0);
                 //check if the command sent correctly
                 if (isSent == -1) {
                     //if couldn't send the command set the state to false and throw an error
@@ -103,6 +103,4 @@ void ConnectCommand::startSending() {
     close(clientSocket);
 }
 
-void ConnectCommand::setState(ProgramState *state) {
-    programState = state;
-}
+ConnectCommand::~ConnectCommand() {}

@@ -60,8 +60,8 @@ list<string> Lexer::analyzeLine(string str) {
         regex_search(str, m, re);
         tokens.emplace_back("var");
         if (m.empty()) {
-            regex re("\\s*var (.*) = (.*)");
-            regex_search(str, m, re);
+            regex tempRe("\\s*var (.*) = (.*)");
+            regex_search(str, m, tempRe);
             tokens.emplace_back(m[1]);
             tokens.emplace_back("=");
             tokens.emplace_back(m[2]);

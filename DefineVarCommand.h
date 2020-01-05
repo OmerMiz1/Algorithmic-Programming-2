@@ -22,6 +22,8 @@ public:
      */
     DefineVarCommand(SymbolTable *symTable);
 
+    ~DefineVarCommand();
+
     int execute(list<string>::iterator) override;
 
 private:
@@ -30,7 +32,7 @@ private:
      * @param str the string that needs to be checked
      * @return true if the string his a float, false otherwise
      */
-    bool isFloat(string str);
+    static bool isFloat(string str);
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__DEFINEVARCOMMAND_H_

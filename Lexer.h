@@ -32,7 +32,7 @@ private:
      * Check if a string is a prefix of another string
      * @param prefix the prefix we are checking for
      * @param str the string we are searching the prefix in
-     * @return true if the first is a prefix of the secont, false otherwise
+     * @return true if the first is a prefix of the second, false otherwise
      */
     static bool startsWith(const char *prefix, string str);
 };
