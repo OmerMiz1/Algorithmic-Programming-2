@@ -17,8 +17,8 @@ This should answer a short list of basic questions:
         6.b *"--generic=socket,out,10,127.0.0.1,5400,tcp,generic_small"*
     *NOTE: make sure there are'nt any whitespaces or chars sneaking in there!*
 
-## Big thanks to eli haleschi for the XML file.
+## Big thanks to Dr Eliahu Khalastchi for making the XML file.
 
-## List the contact information for your team as well as where to ask questions.
+## Contact us
 
 If you have any suggestions\questions please feel free to contact us at : *dorefaeli@gmail.com*
