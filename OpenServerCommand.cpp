@@ -8,8 +8,6 @@
 
 #include "OpenServerCommand.h"
 
-using namespace std;
-
 OpenServerCommand::OpenServerCommand(SymbolTable *sym, ProgramState *state)
     : symTable(sym), programState(state) {}
 
@@ -42,7 +40,7 @@ int OpenServerCommand::execute(list<string>::iterator it) {
     address.sin_port = htons(port); // more info tirgul 6 page 32
 
     // BIND
-    if (bind(sockfd, (struct sockaddr *) &address, sizeof(address)) == -1) {
+    if (::bind(sockfd, (struct sockaddr *) &address, sizeof(address)) == -1) {
         programState->turnOff();
         throw "Could not bind the socket to an IP";
     }
