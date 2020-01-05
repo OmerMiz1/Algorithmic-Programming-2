@@ -20,8 +20,15 @@ MainThread::MainThread(SymbolTable *table, MainThread *outer): father(outer) {
 }
 
 MainThread::~MainThread() {
+    // Waits for client and server to finish closing. BANDAGE
+    while(!(*sDone) || !(*cDone)) {
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
     delete symTable;
     delete cmdMap;
+    delete programState;
+    delete father;
 }
 
 /** Command interface forces to implement execute with iterator, so made this 1
@@ -73,6 +80,11 @@ int MainThread::execute(list<string>::iterator it) {
             advance(it, parser->parseCommand(it));
         }
     }
+
+    // If this is the first MainThread created, if done, program's done.
+    if(this->father == nullptr) {
+        this->programState->turnOff();
+    }
     return 0;
 }
 
@@ -82,8 +94,13 @@ int MainThread::execute(list<string>::iterator it) {
  * @param symTable, some commands need to initialize.
  */
 void MainThread::initCommands() {
-    cmdMap->emplace("openDataServer", new OpenServerCommand(symTable, programState));
-    cmdMap->emplace("connectControlClient", new ConnectCommand(symTable, programState));
+    auto osc = new OpenServerCommand(symTable, programState);
+    auto ccc = new ConnectCommand(symTable, programState);
+    this->sDone = osc->isDone();
+    this->cDone = ccc->isDone();
+
+    cmdMap->emplace("openDataServer", osc);
+    cmdMap->emplace("connectControlClient", ccc);
     cmdMap->emplace("var", new DefineVarCommand(symTable));
     cmdMap->emplace("Print", new Print(symTable));
     cmdMap->emplace("Sleep", new Sleep());

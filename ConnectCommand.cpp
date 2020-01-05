@@ -24,12 +24,14 @@ int ConnectCommand::execute(list<string>::iterator it) {
         port = stoi(portString);
     } catch (...) {
         programState->turnOff();
+        this->done = true;
         throw "Port not valid";
     }
 
     this->clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == -1) {
         programState->turnOff();
+        this->done = true;
         throw "Failed to create client socket";
     }
 
@@ -40,6 +42,8 @@ int ConnectCommand::execute(list<string>::iterator it) {
 
     while ((this->isConnect = connect(clientSocket, (struct sockaddr *) &address, sizeof(address)))) {
         if (this->isConnect == -1) {
+            programState->turnOff();
+            this->done = true;
             throw "Error connecting to simulator";
         }
         this_thread::sleep_for(chrono::milliseconds(100));
@@ -78,6 +82,7 @@ void ConnectCommand::startSending() {
                 if (isSent == -1) {
                     //if couldn't send the command set the state to false and throw an error
                     programState->turnOff();
+                    this->done = true;
                     throw "Failed to send string to host";
                 }
                 char buffer[1024] = {0};
@@ -101,4 +106,5 @@ void ConnectCommand::startSending() {
         }
     }
     close(clientSocket);
+    this->done = true;
 }

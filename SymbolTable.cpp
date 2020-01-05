@@ -17,7 +17,8 @@ float SymbolTable::getVariable(string name) {
     while (this->getIngoing().count(name) && !this->recursiveContains(name)) {
         this_thread::sleep_for(chrono::milliseconds(100));
     }
-    lock_guard<mutex> guard(this->mtx);
+    mutex mtx;
+    lock_guard<mutex> guard(mtx);
     //if the variable isn't known to the symbol table (or his fathers)
     if (!this->recursiveContains(name)) {
         //it's an expression, evaluate him and return his value
@@ -35,7 +36,8 @@ float SymbolTable::getVariable(string name) {
 }
 
 void SymbolTable::setVariable(string name, float num) {
-    lock_guard<mutex> guard(this->mtx);
+    mutex mtx;
+    lock_guard<mutex> guard(mtx);
     if (!this->contains(name) && this->recursiveContains(name)) {
         this->father->setVariable(name, num);
     } else {
@@ -45,7 +47,8 @@ void SymbolTable::setVariable(string name, float num) {
 }
 
 void SymbolTable::setRemoteVariable(string name, string direction, string simLocation) {
-    lock_guard<mutex> guard(this->mtx);
+    mutex mtx;
+    lock_guard<mutex> guard(mtx);
     //removes the - sim(" - from the start of the location string
     simLocation.erase(0, 5);
     //removes the - ) - from the start of the location string
@@ -74,10 +77,14 @@ bool SymbolTable::recursiveContains(string name) {
 }
 
 map<string, string> SymbolTable::getIngoing() {
+    mutex mtx;
+    lock_guard<mutex> guard(mtx);
     return this->ingoing;
 }
 
 map<string, float> SymbolTable::getOutgoing() {
+    mutex mtx;
+    lock_guard<mutex> guard(mtx);
     map<string, float> temp;
     auto it = this->outgoing.begin();
     while (it != this->outgoing.end()) {
@@ -89,6 +96,8 @@ map<string, float> SymbolTable::getOutgoing() {
 }
 
 map<string, float> SymbolTable::updatedMap() {
+    mutex mtx;
+    lock_guard<mutex> guard(mtx);
     map<string, float> temp;
     if (this->father != nullptr) {
         temp = this->father->updatedMap();
@@ -102,6 +111,8 @@ map<string, float> SymbolTable::updatedMap() {
 }
 
 void SymbolTable::addToIngoing(string name, string simLocation) {
+    mutex mtx;
+    lock_guard<mutex> guard(mtx);
     this->ingoing[name] = simLocation;
 }
 
@@ -118,7 +129,9 @@ void SymbolTable::addToOutgoingIfNeeded(string name, float num) {
 }
 
 void SymbolTable::clearOutgoing() {
-    lock_guard<mutex> guard(this->mtx);
+    mutex mtx;
+    lock_guard<mutex> guard(mtx);
+//    lock_guard<mutex> guard(this->mtx);
     this->outgoing.clear();
 }
 

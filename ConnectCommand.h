@@ -24,6 +24,7 @@ class ConnectCommand : public Command {
 private:
     int clientSocket;
     int isConnect = 0;
+    bool done =false;
     SymbolTable *symbolTable;
     ProgramState *programState;
     list<const char *> cmdQueue;
@@ -44,6 +45,8 @@ public:
      * Opens a connection with the simulator and sends him data continuely, should be executed as a thread.
      */
     void startSending();
+
+    bool* isDone() {return &(this->done);}
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__CONNECTCOMMAND_H_

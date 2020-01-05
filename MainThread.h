@@ -28,8 +28,9 @@ class MainThread : Command {
 private:
     string filePath;
     SymbolTable *symTable;
-    ProgramState *programState = new ProgramState();
+    bool *sDone, *cDone; // BANDAGE for d'tor.
     MainThread *father = nullptr;
+    ProgramState *programState = new ProgramState();
     unordered_map<string, Command *> *cmdMap = new unordered_map<string,Command*>;
 
     void initCommands();
