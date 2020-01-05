@@ -15,28 +15,33 @@ DefineVarCommand::DefineVarCommand(SymbolTable *symTable) : symbolTable(symTable
  * 2. Update data received  about var from the simulator.
  */
 int DefineVarCommand::execute(list<string>::iterator it) {
-
+    bool assignment = false;
     int skip;
+
     if (it->compare("var") == 0) {
         ++it; // "var" advance to "<var_name>"
         skip = 4;
         //TODO check if exist
     } else {
+        assignment = true;
         skip = 3;
     }
+
     string name = *it;
     ++it; // "<var_name> advance to "<operation_type>", {"<-", "->", "="}
     string direction = *it;
     ++it; // "<operation_type>" advance to "<var_value>" {value \ another var}
     string value = *it;
 
-    if (direction.compare("->") == 0 || direction.compare("<-") == 0) {
+    if(assignment) {
+        this->symbolTable->setVariable(name, stof(value));
+    } else if (direction.compare("->") == 0 || direction.compare("<-") == 0) {
         this->symbolTable->setRemoteVariable(name, direction, value);
     } else if (direction.compare("=") == 0) {
         if (this->isFloat(value)) {
-            this->symbolTable->setVariable(name, stof(value));
+            this->symbolTable->defineVariable(name, stof(value));
         } else {
-            this->symbolTable->setVariable(name, this->symbolTable->getVariable(value));
+            this->symbolTable->defineVariable(name, this->symbolTable->getVariable(value));
         }
     } else {
         //TODO this line is only for debugging, remove before done
