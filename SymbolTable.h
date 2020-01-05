@@ -46,7 +46,14 @@ public:
     float getVariable(string);
 
     /**
-     * Sets a new value for a variable
+     * Sets a new variable
+     * @param name the name of the new variable
+     * @param value the new value of the new variable
+     */
+    void defineVariable(string name, float value);
+
+    /**
+     * Sets a new value for an existing variable
      * @param name the name of the variable
      * @param value the new value of the variable
      */
