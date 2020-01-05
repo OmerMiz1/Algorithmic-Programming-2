@@ -13,7 +13,7 @@ MainThread::MainThread() {
  *
  * @param table
  */
-MainThread::MainThread(SymbolTable *table, MainThread *outer): father(outer) {
+MainThread::MainThread(SymbolTable *table, MainThread *outer) : father(outer) {
     this->symTable = new SymbolTable(table);
 }
 
@@ -54,9 +54,9 @@ int MainThread::execute(list<string>::iterator it) {
             advance(it, parser->parseCommand(it));
         }
 
-    // SUB MAIN TOKEN ITERATION
+        // SUB MAIN TOKEN ITERATION
     } else {
-        while(it->compare("}") != 0) {
+        while (it->compare("}") != 0) {
             advance(it, parser->parseCommand(it));
         }
     }
@@ -76,5 +76,5 @@ void MainThread::initCommands() {
     cmdMap->emplace("Print", new Print(symTable));
     cmdMap->emplace("Sleep", new Sleep());
     cmdMap->emplace("while", new LoopCommand(new MainThread(symTable, this), symTable));
-    cmdMap->emplace("if", new IfCommand(new MainThread(symTable,this), symTable));
+    cmdMap->emplace("if", new IfCommand(new MainThread(symTable, this), symTable));
 }

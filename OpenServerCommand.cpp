@@ -9,7 +9,7 @@
 #include "OpenServerCommand.h"
 
 OpenServerCommand::OpenServerCommand(SymbolTable *sym, ProgramState *state)
-    : symTable(sym), programState(state) {}
+        : symTable(sym), programState(state) {}
 
 OpenServerCommand::~OpenServerCommand() {
     delete symTable; // MainThread will delete programState object.
@@ -28,7 +28,7 @@ int OpenServerCommand::execute(list<string>::iterator it) {
     // Parse port token
     try {
         port = stoi(*it);
-    } catch (const char* e){
+    } catch (const char *e) {
         throw e;
     }
 
@@ -85,7 +85,7 @@ int OpenServerCommand::execute(list<string>::iterator it) {
  * @param symTable to update.
  */
 void OpenServerCommand::startListening() {
-    unsigned int maxVars, totalBytesRead=0, minBytes;
+    unsigned int maxVars, totalBytesRead = 0, minBytes;
     chrono::milliseconds maxSleep, timePassed;
     chrono::steady_clock::time_point start, end;
     auto *tokens = new list<string>;
@@ -101,13 +101,13 @@ void OpenServerCommand::startListening() {
         start = chrono::steady_clock::now();
 
         // Re-initialize every iteration
-        int bytesRead =0;
+        int bytesRead = 0;
         char buffer[MAX_CHARS] = {0};
         bytesRead = 0;
         string bufStr;
 
         // Optimization: if tokens is larger then 3 times max amount, clean it.
-        if (tokens->size() > maxVars*3) {
+        if (tokens->size() > maxVars * 3) {
             clearOldTokens(tokens);
         }
 
@@ -190,7 +190,7 @@ void OpenServerCommand::mapTokens(list<string> *tokens,
  */
 void OpenServerCommand::updateIngoing(unordered_map<int, float> *updates) {
     unordered_map<string, int>
-        pathToIndex = Parser::parseXml("../generic_small.xml");
+            pathToIndex = Parser::parseXml("../generic_small.xml");
 
     // <Name : Path>
     for (auto const namePath : symTable->getIngoing()) {
@@ -198,13 +198,14 @@ void OpenServerCommand::updateIngoing(unordered_map<int, float> *updates) {
         auto pathIndex = pathToIndex.find(namePath.second);
         // Used casting cause of warning, in reality its always positive.
         if (pathIndex != pathToIndex.end()
-                && static_cast<unsigned>(pathIndex->second) < updates->size()) {
+            && static_cast<unsigned>(pathIndex->second) < updates->size()) {
             // <Index : New Value>
             auto indexNewValue = updates->find(pathIndex->second);
             symTable->setVariable(namePath.first, indexNewValue->second);
         }
     }
 }
+
 /** Removes all tokens not related to latest read() from simulator.
  *
  * Used mainly for optimising. List should be generated using toTokens().

@@ -26,7 +26,7 @@ int Parser::parseCommand(list<string>::iterator it) {
     // Cmd found in map, just executes
     if (currCmd != this->cmdMap->end()) {
         return currCmd->second->execute(it);
-    // Cmd not in map so it is an assignment.
+        // Cmd not in map so it is an assignment.
     } else {
         return this->cmdMap->find("var")->second->execute(it);
     }

@@ -24,8 +24,11 @@ private:
 
 public:
     explicit Parser(unordered_map<string, Command *> *);
+
     ~Parser();
+
     int parseCommand(list<string>::iterator);
+
     static unordered_map<string, int> parseXml(const char *);
 };
 

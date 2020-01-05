@@ -15,7 +15,8 @@
 
 class LoopCommand : public ConditionCommand {
 public:
-    explicit LoopCommand(Command*,SymbolTable*);
+    explicit LoopCommand(Command *, SymbolTable *);
+
     int execute(list<string>::iterator) override;
 };
 

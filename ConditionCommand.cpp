@@ -5,7 +5,7 @@
 #include "ConditionCommand.h"
 
 ConditionCommand::ConditionCommand(Command *main, SymbolTable *table)
-    : myMain(main), symTable(table) {}
+        : myMain(main), symTable(table) {}
 
 ConditionCommand::~ConditionCommand() {
     delete myMain;
@@ -30,7 +30,7 @@ int ConditionCommand::execute(list<string>::iterator it) {
  */
 int ConditionCommand::countScopeTokens(list<string>::iterator it) {
     int count = 0, scopesCount = 1;
-    advance(it,2);
+    advance(it, 2);
 
     // In case of inner scopes, keeps counting until the relevant end of scope.
     for (count = 2; scopesCount > 0; ++it, ++count) {

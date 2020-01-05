@@ -6,7 +6,7 @@
 
 #include "LoopCommand.h"
 
-LoopCommand::LoopCommand(Command *main, SymbolTable* table) : ConditionCommand(main,table) {}
+LoopCommand::LoopCommand(Command *main, SymbolTable *table) : ConditionCommand(main, table) {}
 
 int LoopCommand::execute(list<string>::iterator it) {
     int numOfTokens = ConditionCommand::execute(it);

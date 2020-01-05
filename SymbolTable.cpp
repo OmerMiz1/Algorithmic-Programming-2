@@ -14,8 +14,7 @@ SymbolTable::SymbolTable() {
 SymbolTable::SymbolTable(SymbolTable *parent) : father(parent) {}
 
 float SymbolTable::getVariable(string name) {
-    while (this->getIngoing().count(name) && !this->recursiveContains(name))
-    {
+    while (this->getIngoing().count(name) && !this->recursiveContains(name)) {
         this_thread::sleep_for(chrono::milliseconds(100));
     }
     lock_guard<mutex> guard(this->mtx);
@@ -48,7 +47,7 @@ void SymbolTable::setVariable(string name, float num) {
 void SymbolTable::setRemoteVariable(string name, string direction, string simLocation) {
     lock_guard<mutex> guard(this->mtx);
     //removes the - sim(" - from the start of the location string
-    simLocation.erase(0,5);
+    simLocation.erase(0, 5);
     //removes the - ) - from the start of the location string
     simLocation.pop_back();
     //removes the - " - from the start of the location string

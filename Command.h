@@ -11,9 +11,10 @@
 using namespace std;
 
 class Command {
- public:
+public:
     virtual ~Command() {}
-    virtual int execute(list<string>::iterator)=0;
+
+    virtual int execute(list<string>::iterator) = 0;
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__COMMAND_H_

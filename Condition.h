@@ -23,7 +23,7 @@ public:
      * @param symTable the symbol table that the condition is checked according to
      * @param str a string that describes the condition
      */
-    explicit Condition(SymbolTable * symTable, string str);
+    explicit Condition(SymbolTable *symTable, string str);
 
     /**
      * Returns the state of the condition

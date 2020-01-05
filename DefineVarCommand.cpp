@@ -54,8 +54,8 @@ bool DefineVarCommand::isFloat(string str) {
                 return false;
             }
         }
-        if (*it!='0' && *it!='1' && *it!='2' && *it!='3' && *it!='4' &&
-                *it!='5' && *it!='6' && *it!='7' && *it!='8' && *it!='9') {
+        if (*it != '0' && *it != '1' && *it != '2' && *it != '3' && *it != '4' &&
+            *it != '5' && *it != '6' && *it != '7' && *it != '8' && *it != '9') {
             return false;
         }
         it++;

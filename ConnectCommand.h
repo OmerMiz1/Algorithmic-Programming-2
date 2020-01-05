@@ -34,7 +34,8 @@ public:
      * @param symTable the symbol table for the command to use
      * @param programState the program state that the command uses
      */
-    ConnectCommand(SymbolTable*, ProgramState*);
+    ConnectCommand(SymbolTable *, ProgramState *);
+
     ~ConnectCommand() {};
 
     int execute(list<string>::iterator it) override;

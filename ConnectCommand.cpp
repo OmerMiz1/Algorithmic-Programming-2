@@ -14,7 +14,7 @@ ConnectCommand::ConnectCommand(SymbolTable *symTable, ProgramState *state)
 int ConnectCommand::execute(list<string>::iterator it) {
     ++it;
     string tempIp = *it;
-    tempIp.erase(0,1);
+    tempIp.erase(0, 1);
     tempIp.pop_back();
     const char *ip = (tempIp).c_str();
     ++it;
@@ -39,13 +39,13 @@ int ConnectCommand::execute(list<string>::iterator it) {
     address.sin_port = htons(port);
 
     while ((this->isConnect = connect(clientSocket, (struct sockaddr *) &address, sizeof(address)))) {
-        if(this->isConnect == -1) {
+        if (this->isConnect == -1) {
             throw "Error connecting to simulator";
         }
         this_thread::sleep_for(chrono::milliseconds(100));
     }
 
-    cout<<"Client: connected to simulator successfully"<<endl;
+    cout << "Client: connected to simulator successfully" << endl;
 
     thread th(&ConnectCommand::startSending, this);
     th.detach();

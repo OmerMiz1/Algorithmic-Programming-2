@@ -35,7 +35,7 @@ public:
      * Construct a sub-SymbolTable that as a father-SymbolTable
      * @param father the father-SymbolTable
      */
-    explicit SymbolTable(SymbolTable*);
+    explicit SymbolTable(SymbolTable *);
 
     /**
      * Get a variable according to his name

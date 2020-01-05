@@ -29,7 +29,7 @@ public:
         ++it;
         if (it->front() == '"' && it->back() == '"') {
             it->pop_back();
-            it->erase(0,1);
+            it->erase(0, 1);
             cout << *it << endl;
         } else {
             cout << this->symTable->getVariable(*it) << endl;
