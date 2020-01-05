@@ -19,6 +19,9 @@ Welcome to our program's repo, we've added a bunch of usefull instructions and i
 
 ## Big thanks to Dr Eliahu Khalastchi for making the XML file
 
+## GitHub repository:
+https://github.com/dorefaeli/AlgorithmicProgrammingProject
+
 ## Contact us
 
 If you have any suggestions\questions please feel free to contact us at : *dorefaeli@gmail.com*
