@@ -23,7 +23,6 @@ class SymbolTable {
     map<string, string> ingoing;
     //a map that contains the variables that should be sent to the simulator by the ConnectCommand
     map<string, float> outgoing;
-    mutex mtx;
 
 public:
     /**

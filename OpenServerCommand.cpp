@@ -36,6 +36,7 @@ int OpenServerCommand::execute(list<string>::iterator it) {
     this->sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         programState->turnOff();
+        this->done = true;
         throw "Could not create a socket.";
     }
 
@@ -46,12 +47,14 @@ int OpenServerCommand::execute(list<string>::iterator it) {
     // BIND
     if (::bind(sockfd, (struct sockaddr *) &address, sizeof(address)) == -1) {
         programState->turnOff();
+        this->done = true;
         throw "Could not bind the socket to an IP";
     }
 
     // LISTEN
     if (listen(sockfd, MAX_CLIENTS) == -1) {
         programState->turnOff();
+        this->done = true;
         throw "Error listening to to port";
     }
 
@@ -61,6 +64,7 @@ int OpenServerCommand::execute(list<string>::iterator it) {
                                         (socklen_t *) &address))) {
         if (client_sock == -1) {
             programState->turnOff();
+            this->done = true;
             throw "Error accepting simulator";
         }
     }
@@ -72,6 +76,7 @@ int OpenServerCommand::execute(list<string>::iterator it) {
         th.detach();
     } catch (const char *e) {
         programState->turnOff();
+        this->done = true;
         throw e;
     }
 
@@ -117,6 +122,7 @@ void OpenServerCommand::startListening() {
             // Error reading
             if (bytesRead == -1) {
                 programState->turnOff();
+                this->done = true;
                 throw "Error reading from simulator.";
             }
 
@@ -140,6 +146,7 @@ void OpenServerCommand::startListening() {
         }
     }
     close(this->sockfd);
+    this->done = true;
 }
 
 /** Parses input from simulator into a list of floats.

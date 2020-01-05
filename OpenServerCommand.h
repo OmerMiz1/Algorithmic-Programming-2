@@ -27,6 +27,7 @@ class OpenServerCommand : public Command {
 private:
     int sockfd = 0;
     int client_sock = 0;
+    bool done=false;
     SymbolTable *symTable;
     ProgramState *programState;
 
@@ -46,6 +47,8 @@ public:
     void updateIngoing(unordered_map<int, float> *);
 
     void clearOldTokens(list<string> *);
+
+    bool *isDone() {return &(this->done);}
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__OPENSERVERCOMMAND_H_
