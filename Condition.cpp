@@ -12,7 +12,6 @@ Condition::Condition(SymbolTable *symTable, string str) {
     regex re("\\s*(.*) (=|<|>|<=|>=|!=) (.*)");
     smatch m;
     regex_search(str, m, re);
-    this->interpreter = new Interpreter();
     this->left = m[1];
     this->sign = m[2];
     this->right = m[3];

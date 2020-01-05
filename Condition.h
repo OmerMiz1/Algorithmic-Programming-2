@@ -16,7 +16,6 @@ class Condition {
     string left;
     string sign;
     string right;
-    Interpreter *interpreter;
     SymbolTable *symbolTable;
 public:
     /**
