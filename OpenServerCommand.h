@@ -24,20 +24,20 @@
 using namespace std;
 
 class OpenServerCommand : public Command {
-private:
-    int client_sock;
+ private:
     int sockfd;
+    int client_sock;
     SymbolTable *symTable;
     ProgramState *programState;
     void startListening();
 
-public:
+ public:
     OpenServerCommand(SymbolTable *, ProgramState *);
     int execute(list<string>::iterator) override;
-    void toTokens(const char*, list<string>*);
-    void mapTokens(list<string>*, unordered_map<int,float>*);
-    void updateIngoing(unordered_map<int,float>*);
-    void clearOldTokens(list<string>*);
+    void toTokens(const char *, list<string> *);
+    void mapTokens(list<string> *, unordered_map<int, float> *);
+    void updateIngoing(unordered_map<int, float> *);
+    void clearOldTokens(list<string> *);
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__OPENSERVERCOMMAND_H_
