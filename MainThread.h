@@ -26,22 +26,20 @@
 
 class MainThread : Command {
 private:
+    string filePath;
     SymbolTable *symTable;
     ProgramState *programState = new ProgramState();
     MainThread *father = nullptr;
-    unordered_map<string, Command *> *cmdMap = new unordered_map<string, Command *>;
+    unordered_map<string, Command *> *cmdMap = new unordered_map<string,Command*>;
 
     void initCommands();
 
 public:
-    MainThread();
-
-    explicit MainThread(SymbolTable *, MainThread *);
-
+    MainThread(char*);
+    explicit MainThread(SymbolTable*, MainThread*);
     ~MainThread();
 
     int execute(list<string>::iterator) override;
-
     int execute();
 };
 

@@ -12,8 +12,13 @@ using namespace std;
 
 list<string> Lexer::analyzeCode(const char *file) {
     list<string> tokens;
-    string str;
+    string str, err(file);
     ifstream fileStream(file);
+
+    if(fileStream.fail()) {
+        throw "Error reading from:" + err;
+    }
+
     while (getline(fileStream, str)) {
 
         list<string> temp = analyzeLine(str);

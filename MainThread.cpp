@@ -5,7 +5,8 @@
 /** Instantiate the main (first) scope.
  *
  */
-MainThread::MainThread() {
+MainThread::MainThread(char* fileName) {
+    this->filePath = fileName;
     this->symTable = new SymbolTable();
 }
 
@@ -13,7 +14,8 @@ MainThread::MainThread() {
  *
  * @param table
  */
-MainThread::MainThread(SymbolTable *table, MainThread *outer) : father(outer) {
+MainThread::MainThread(SymbolTable *table, MainThread *outer): father(outer) {
+    this->filePath = outer->filePath;
     this->symTable = new SymbolTable(table);
 }
 
@@ -35,6 +37,9 @@ int MainThread::execute() {
 /** Parses each line in the text file and executes using the parser.
  *  Also acts as the main thread where Server and Client are detaching from.
  *
+ * NOTE: This class is also used in order to call inner scopes such as in while
+ * or if commands (yes its code smells, we have time limit after all).
+ *
  * @return 0 if no errors.
  */
 int MainThread::execute(list<string>::iterator it) {
@@ -47,20 +52,27 @@ int MainThread::execute(list<string>::iterator it) {
     // FIRST MAIN TOKEN ITERATION
     if (this->father == nullptr) {
         // Turn file into tokens.
-        tokens = Lexer::analyzeCode("../fly.txt");
+        try {
+            try {
+                tokens = Lexer::analyzeCode(filePath.c_str());
+            } catch (const char* e) {
+                throw e;
+            }
 
+        } catch (const char* e) {
+            throw e;
+        }
         // Each iteration executes a line from the '.txt' file.
         for (it = tokens.begin(); it != tokens.end();) {
             advance(it, parser->parseCommand(it));
         }
 
-        // SUB MAIN TOKEN ITERATION
+    // Sub-MainThread execution, case of inner scope (code smells we know :\)
     } else {
-        while (it->compare("}") != 0) {
+        while(it->compare("}") != 0) {
             advance(it, parser->parseCommand(it));
         }
     }
-
     return 0;
 }
 
@@ -76,5 +88,5 @@ void MainThread::initCommands() {
     cmdMap->emplace("Print", new Print(symTable));
     cmdMap->emplace("Sleep", new Sleep());
     cmdMap->emplace("while", new LoopCommand(new MainThread(symTable, this), symTable));
-    cmdMap->emplace("if", new IfCommand(new MainThread(symTable, this), symTable));
+    cmdMap->emplace("if", new IfCommand(new MainThread(symTable,this), symTable));
 }
