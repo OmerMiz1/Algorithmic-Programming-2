@@ -18,20 +18,20 @@ Condition::Condition(SymbolTable *symTable, string str) {
 }
 
 bool Condition::getState() const {
-    float left = this->symbolTable->getVariable(this->left);
-    float right = this->symbolTable->getVariable(this->right);
+    float leftValue = this->symbolTable->getVariable(this->left);
+    float rightValue = this->symbolTable->getVariable(this->right);
     if (this->sign == "=") {
-        return left == right;
+        return leftValue == rightValue;
     } else if (this->sign == "<") {
-        return left < right;
+        return leftValue < rightValue;
     } else if (this->sign == ">") {
-        return left > right;
+        return leftValue > rightValue;
     } else if (this->sign == "<=") {
-        return left <= right;
+        return leftValue <= rightValue;
     } else if (this->sign == ">=") {
-        return left >= right;
+        return leftValue >= rightValue;
     } else if (this->sign == "!=") {
-        return left != right;
+        return leftValue != rightValue;
     } else {
         throw "Error processing a condition";
     }

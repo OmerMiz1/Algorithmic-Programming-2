@@ -16,7 +16,6 @@ DefineVarCommand::DefineVarCommand(SymbolTable *symTable) : symbolTable(symTable
  */
 int DefineVarCommand::execute(list<string>::iterator it) {
 
-    Command *cmd;
     int skip;
     if (it->compare("var") == 0) {
         ++it; // "var" advance to "<var_name>"
@@ -48,7 +47,7 @@ int DefineVarCommand::execute(list<string>::iterator it) {
 
 bool DefineVarCommand::isFloat(string str) {
     bool wasDot = false;
-    auto it = str.begin();
+    string::iterator it = str.begin();
     while (it != str.end()) {
         if (*it == '.') {
             if (!wasDot) {
@@ -66,4 +65,8 @@ bool DefineVarCommand::isFloat(string str) {
         it++;
     }
     return true;
+}
+
+DefineVarCommand::~DefineVarCommand() {
+
 }

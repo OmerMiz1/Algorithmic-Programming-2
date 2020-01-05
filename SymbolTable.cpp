@@ -17,7 +17,7 @@ float SymbolTable::getVariable(string name) {
     while (this->getIngoing().count(name) && !this->recursiveContains(name))
     {
         //TODO remove only the first line before submitting!!!
-        std::cout << "asked for a variable that the server havn't added yet \"" + name + "\"" << std::endl;
+        std::cout << "asked for a variable that the server hasn't been added yet \"" + name + "\"" << std::endl;
         this_thread::sleep_for(chrono::milliseconds(100));
     }
     lock_guard<mutex> guard(this->mtx);
@@ -28,7 +28,7 @@ float SymbolTable::getVariable(string name) {
         interpreter.setVariables(this->updatedMap());
         name = "(" + name + ")"; //TODO check if needed
         Expression *expression = interpreter.interpret(name);
-        return expression->calculate();
+        return static_cast<float>(expression->calculate());
     } else if (this->contains(name)) {
         return localVariables[name];
     } else if (this->father != nullptr) {
@@ -62,7 +62,10 @@ void SymbolTable::setRemoteVariable(string name, string direction, string simLoc
 }
 
 bool SymbolTable::contains(string name) {
-    return this->localVariables.count(name);
+    if (this->localVariables.count(name) == 0) {
+        return false;
+    }
+    return true;
 }
 
 bool SymbolTable::recursiveContains(string name) {
