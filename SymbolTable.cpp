@@ -37,18 +37,13 @@ float SymbolTable::getVariable(string name) {
     throw "Error getting a variable";
 }
 
-void SymbolTable::defineVariable(string name, float value) {
+void SymbolTable::setVariable(string name, float num) {
     lock_guard<mutex> guard(this->mtx);
-    this->localVariables[name] = value;
-}
-
-void SymbolTable::setVariable(string name, float value) {
-    lock_guard<mutex> guard(this->mtx);
-    if (this->contains(name)) {
-        this->localVariables[name] = value;
-        this->addToOutgoingIfNeeded(name, value);
+    if (!this->contains(name) && this->recursiveContains(name)) {
+        this->father->setVariable(name, num);
     } else {
-        this->father->setVariable(name, value);
+        this->localVariables[name] = num;
+        this->addToOutgoingIfNeeded(name, num);
     }
 }
 
