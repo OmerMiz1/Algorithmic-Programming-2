@@ -16,6 +16,7 @@ private:
 
 public:
     int execute(list<string>::iterator) override;
+    ~FuncCommand() {};
 };
 
 #endif //ALGORITHMICPROGRAMMINGPROJECT__FUNCCOMMAND_H_

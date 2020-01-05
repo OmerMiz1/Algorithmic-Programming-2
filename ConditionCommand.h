@@ -19,14 +19,14 @@
 using namespace std;
 
 class ConditionCommand : public Command {
-protected:
+ protected:
     Command *myMain = nullptr;
     SymbolTable *symTable = nullptr;
     Condition *myCondition = nullptr;
 
-public:
-    explicit ConditionCommand(Command*, SymbolTable*);
-    ~ConditionCommand() override;
+ public:
+    explicit ConditionCommand(Command *, SymbolTable *);
+    ~ConditionCommand();
     int execute(list<string>::iterator) override;
     int countScopeTokens(list<string>::iterator it);
 };
