@@ -11,6 +11,10 @@
 OpenServerCommand::OpenServerCommand(SymbolTable *sym, ProgramState *state)
     : symTable(sym), programState(state) {}
 
+OpenServerCommand::~OpenServerCommand() {
+    delete symTable; // MainThread will delete programState object.
+}
+
 /** Starts a new TCP server.
  *
  * @param it points to "OpenServerCommand" token followed by "<port_val>"
@@ -206,7 +210,6 @@ void OpenServerCommand::updateIngoing(unordered_map<int, float> *updates) {
         }
     }
 }
-
 /** Removes all tokens not related to latest read() from simulator.
  *
  * Used mainly for optimising. List should be generated using toTokens().

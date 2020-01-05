@@ -36,7 +36,7 @@ private:
 public:
     MainThread();
     explicit MainThread(SymbolTable*, MainThread*);
-    ~MainThread() override;
+    ~MainThread();
 
     int execute(list<string>::iterator) override;
     int execute();

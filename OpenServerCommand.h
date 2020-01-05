@@ -33,6 +33,7 @@ class OpenServerCommand : public Command {
 
  public:
     OpenServerCommand(SymbolTable *, ProgramState *);
+    ~OpenServerCommand();
     int execute(list<string>::iterator) override;
     void toTokens(const char *, list<string> *);
     void mapTokens(list<string> *, unordered_map<int, float> *);

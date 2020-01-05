@@ -35,6 +35,7 @@ public:
      * @param programState the program state that the command uses
      */
     ConnectCommand(SymbolTable *symTable, ProgramState *programState);
+    ~ConnectCommand();
 
     ~ConnectCommand();
 
