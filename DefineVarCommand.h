@@ -21,7 +21,9 @@ public:
      * @param symTable the symbol table for the DefineVarCommand
      */
     DefineVarCommand(SymbolTable *symTable);
+
     ~DefineVarCommand();
+
     int execute(list<string>::iterator) override;
 
 private:

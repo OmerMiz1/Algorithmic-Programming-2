@@ -8,11 +8,6 @@
 
 LoopCommand::LoopCommand(Command *main, SymbolTable* table) : ConditionCommand(main,table) {}
 
-/** Executes scope's body (myMain) command.
- *
- * @param it
- * @return
- */
 int LoopCommand::execute(list<string>::iterator it) {
     int numOfTokens = ConditionCommand::execute(it);
     advance(it, 2); // skip first line 1st token: type 2nd token: value

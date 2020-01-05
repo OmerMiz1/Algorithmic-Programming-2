@@ -47,7 +47,6 @@ var h0 = heading
 breaks = 0
 throttle = 1
 while alt < 1000 {
-    var alt = 1000
 	rudder = (h0 - heading)/80
 	aileron = -roll / 70
 	elevator = pitch / 50
