@@ -59,9 +59,7 @@ int OpenServerCommand::execute(list<string>::iterator it) {
     }
 
     // ACCEPT
-    while (!(this->client_sock = accept(sockfd,
-                                        (struct sockaddr *) &address,
-                                        (socklen_t *) &address))) {
+    while (!(client_sock = accept(sockfd,(struct sockaddr *) &address,(socklen_t *) &address))) {
         if (client_sock == -1) {
             programState->turnOff();
             this->done = true;
@@ -108,7 +106,6 @@ void OpenServerCommand::startListening() {
         // Re-initialize every iteration
         int bytesRead = 0;
         char buffer[MAX_CHARS] = {0};
-        bytesRead = 0;
         string bufStr;
 
         // Optimization: if tokens is larger then 3 times max amount, clean it.
