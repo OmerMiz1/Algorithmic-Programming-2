@@ -26,7 +26,9 @@ float SymbolTable::getVariable(string name) {
         interpreter.setVariables(this->updatedMap());
         name = "(" + name + ")";
         Expression *expression = interpreter.interpret(name);
-        return static_cast<float>(expression->calculate());
+        float temp = static_cast<float>(expression->calculate());
+        delete(expression);
+        return temp;
     } else if (this->contains(name)) {
         return localVariables[name];
     } else if (this->father != nullptr) {
